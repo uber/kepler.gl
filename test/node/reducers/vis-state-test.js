@@ -48,7 +48,7 @@ import {
 } from 'test/fixtures/geojson';
 
 import tripGeojson, {timeStampDomain} from 'test/fixtures/trip-geojson';
-import {mockPolygonFeature, mockPolygonData} from '../../fixtures/polygon';
+import {mockPolygonFeature, mockPolygonData, mockPolygonSecondData} from '../../fixtures/polygon';
 
 // test helpers
 import {
@@ -1874,11 +1874,11 @@ test('#visStateReducer -> SET_FILTER.dataId', t => {
 
   let newFilter = newState.filters[1];
   let expectedFilter = {
-    ...getDefaultFilter(testCsvDataId),
-    id: newFilter.id
+    ...oldState.filters[1],
+    dataId: [...oldState.filters[1].dataId, testCsvDataId]
   };
 
-  t.deepEqual(newFilter, expectedFilter, 'Should create a new filter using the provided dataId');
+  t.deepEqual(newFilter, expectedFilter, 'Should add a new dataId value');
 
   // Using an array of dataId
   newState = reducer(newState, VisStateActions.setFilter(1, 'dataId', [testCsvDataId]));
@@ -3804,6 +3804,52 @@ test('#uiStateReducer -> TOGGLE_EDITOR_VISIBILITY', t => {
   t.end();
 });
 
+test('#uiStateReducer -> SET_FEATURES/SET_SELECTED_FEATURE/DELETE_FEATURE', t => {
+  let newState = reducer(INITIAL_VIS_STATE, VisStateActions.setFeatures([]));
+
+  t.deepEqual(
+    newState,
+    INITIAL_VIS_STATE,
+    'Editor should not have features and return the same state'
+  );
+
+  newState = reducer(
+    INITIAL_VIS_STATE,
+    VisStateActions.setFeatures([
+      {
+        ...mockPolygonFeature,
+        properties: {
+          ...mockPolygonFeature.properties,
+          isClosed: false
+        }
+      }
+    ])
+  );
+
+  t.equal(
+    newState.editor.mode,
+    INITIAL_VIS_STATE.editor.mode,
+    'Editor mode should not change because feature is not closed'
+  );
+
+  newState = reducer(
+    newState,
+    VisStateActions.setFeatures([
+      {
+        ...mockPolygonFeature,
+        properties: {
+          ...mockPolygonFeature.properties,
+          isClosed: false
+        }
+      },
+      mockPolygonFeature
+    ])
+  );
+
+  t.equal(newState.editor.mode, EDITOR_MODES.EDIT, 'Editor mode should be set to edit_vertex');
+  t.end();
+});
+
 test('#visStateReducer -> APPLY_CPU_FILTER. no filter', t => {
   const initialState = CloneDeep(StateWFiles.visState);
   const dataId = testCsvDataId;
@@ -3938,7 +3984,7 @@ test('#uiStateReducer -> SET_FEATURES/SET_SELECTED_FEATURE/DELETE_FEATURE', t =>
   t.end();
 });
 
-test('#visStateReducer -> APPLY_CPU_FILTER. has multi datsets', t => {
+test('#visStateReducer -> APPLY_CPU_FILTER. has multi datasets', t => {
   const initialState = CloneDeep(StateWFilters.visState);
   const previousDataset1 = initialState.datasets[testCsvDataId];
   const previousDataset2 = initialState.datasets[testGeoJsonDataId];
@@ -3981,3 +4027,182 @@ test('#visStateReducer -> APPLY_CPU_FILTER. has multi datsets', t => {
 
   t.end();
 });
+
+/* eslint-disable max-statements */
+test('#visStateReducer -> multi dataset filter', t => {
+  const state = {
+    ...INITIAL_VIS_STATE
+  };
+
+  const fields = [
+    {
+      name: 'start_point_lat',
+      format: '',
+      tableFieldIndex: 1,
+      type: 'real',
+      analyzerType: 'FLOAT'
+    },
+    {
+      name: 'start_point_lng',
+      format: '',
+      tableFieldIndex: 2,
+      type: 'real',
+      analyzerType: 'FLOAT'
+    },
+    {
+      name: 'end_point_lat',
+      format: '',
+      tableFieldIndex: 3,
+      type: 'real',
+      analyzerType: 'FLOAT'
+    },
+    {
+      name: 'end_point_lng',
+      format: '',
+      tableFieldIndex: 4,
+      type: 'real',
+      analyzerType: 'FLOAT'
+    }
+  ];
+
+  const datasets = [
+    {
+      data: {
+        fields,
+        rows: mockPolygonData.data
+      },
+      info: {
+        id: 'puppy',
+        label: 'test1.csv',
+        size: 144
+      }
+    },
+    {
+      data: {
+        fields,
+        rows: mockPolygonSecondData
+      },
+      info: {
+        id: 'cat',
+        label: 'test2.csv',
+        size: 144
+      }
+    }
+  ];
+
+  const options = {
+    centerMap: true,
+    keepExistingConfig: false
+  };
+
+  // Add all datasets and creates 8 layers
+  let newState = reducer(state, VisStateActions.updateVisData(datasets, options, {}));
+
+  newState = reducer(newState, VisStateActions.addFilter('puppy'));
+
+  // set filter name for puppy
+  newState = reducer(newState, VisStateActions.setFilter(0, 'name', 'start_point_lat'));
+
+  t.deepEqual(
+    newState.filters[0].domain,
+    [12.25, 14.25],
+    'Should display the correct domain for first dataset'
+  );
+
+  // add a new dataId value, does not change domain of the filter
+  // because we haven't set a name value according to the new dataId value
+  newState = reducer(newState, VisStateActions.setFilter(0, 'dataId', ['puppy']));
+
+  t.equal(
+    newState.filters[0].domain,
+    null,
+    'Should create a new filter because we are passing a an array'
+  );
+
+  // re-set filter name for puppy
+  newState = reducer(newState, VisStateActions.setFilter(0, 'name', 'start_point_lat'));
+
+  t.deepEqual(
+    newState.filters[0].domain,
+    [12.25, 14.25],
+    'Should display the correct domain for first dataset after  resetting name'
+  );
+
+  newState = reducer(newState, VisStateActions.setFilter(0, 'value', [12.25, 13]));
+
+  t.deepEqual(
+    newState.datasets.puppy.filteredIndexForDomain,
+    [0, 1],
+    'Should filter puppy dataset correctly'
+  );
+
+  t.deepEqual(
+    newState.datasets.cat.filteredIndexForDomain,
+    [0, 1, 2, 3],
+    'Should not filter cat dataset correctly'
+  );
+
+  newState = reducer(newState, VisStateActions.setFilter(0, 'dataId', 'cat'));
+
+  t.deepEqual(newState.filters[0].dataId, ['puppy', 'cat'], 'Should set the correct dataId values');
+
+  t.deepEqual(
+    newState.datasets.puppy.filteredIndexForDomain,
+    [0, 1],
+    'Puppy filteredIndexForDomain should not change'
+  );
+
+  // set filter name for cat
+  newState = reducer(newState, VisStateActions.setFilter(0, 'name', 'start_point_lat', 1));
+
+  t.deepEqual(
+    newState.filters[0].name,
+    ['start_point_lat', 'start_point_lat'],
+    'Should provide the correct filter name with two values'
+  );
+
+  t.deepEqual(
+    newState.filters[0].domain,
+    [11.25, 18.25],
+    'Should display the correct domain after applying the filter to the second dataset'
+  );
+
+  t.deepEqual(
+    newState.datasets.puppy.filteredIndexForDomain,
+    [0, 1],
+    'Should not change the first dataset filtered index value'
+  );
+
+  t.deepEqual(
+    newState.datasets.cat.filteredIndexForDomain,
+    [],
+    'Should provide the  correct filteredIndexForDomain value for second dataset'
+  );
+
+  // reset filter name
+  newState = reducer(newState, VisStateActions.setFilter(0, 'name', ['start_point_lat']));
+
+  t.deepEqual(
+    newState.filters[0].domain,
+    [12.25, 14.25],
+    'Should display the correct domain for first dataset after resetting name'
+  );
+
+  t.deepEqual(
+    newState.datasets.puppy.filteredIndexForDomain,
+    [0, 1],
+    'Should filter puppy dataset correctly'
+  );
+
+  t.deepEqual(
+    newState.datasets.cat.filteredIndexForDomain,
+    [0, 1, 2, 3],
+    'Should not filter cat dataset'
+  );
+
+  // // TODO: non existing dataId
+  // newState = reducer(newState, VisStateActions.setFilter(0, 'dataId', 'start_point_lat'));
+
+  t.end();
+});
+/* eslint-enable max-statements */

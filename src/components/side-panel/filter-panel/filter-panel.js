@@ -95,7 +95,7 @@ function FilterPanelFactory(
     };
 
     filterSelector = props => props.filters;
-    nameSelector = props => props.filter.name;
+    nameSelector = props => props.filter.name[0];
     dataIdSelector = props => props.filter.dataId[0];
 
     // only show current field and field that's not already been used as a filter

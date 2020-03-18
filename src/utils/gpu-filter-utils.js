@@ -234,3 +234,16 @@ export function getDatasetFieldIndexForFilter(dataId, filter) {
 
   return notNullorUndefined(fieldIndex) ? fieldIndex : -1;
 }
+
+/**
+ * Assigns GPU mode and channel if filter has gpu property enabled
+ * @param newFilter
+ * @param filters
+ */
+export function applyFilterGPU(newFilter, filters) {
+  if (newFilter.gpu) {
+    const filter = setFilterGpuMode(newFilter, filters);
+    return assignGpuChannel(filter, filters);
+  }
+  return newFilter;
+}

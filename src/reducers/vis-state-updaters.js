@@ -36,7 +36,6 @@ import {addDataToMap} from 'actions';
 import {getDefaultInteraction, findFieldsToShow} from 'utils/interaction-utils';
 import {
   FILTER_UPDATER_PROPS,
-  LIMITED_FILTER_EFFECT_PROPS,
   applyFilterFieldName,
   applyFiltersToDatasets,
   generatePolygonFilter,
@@ -49,7 +48,7 @@ import {
   featureToFilterValue,
   updateFilterDataId
 } from 'utils/filter-utils';
-import {setFilterGpuMode, assignGpuChannel} from 'utils/gpu-filter-utils';
+import {applyFilterGPU} from 'utils/gpu-filter-utils';
 import {createNewDataEntry} from 'utils/dataset-utils';
 import {set, toArray, generateHashId} from 'utils/utils';
 
@@ -505,63 +504,89 @@ export function interactionConfigChangeUpdater(state, action) {
  * @param {Number} action.idx `idx` of filter to be updated
  * @param {string} action.prop `prop` of filter, e,g, `dataId`, `name`, `value`
  * @param {*} action.value new value
- * @param {string} datasetId used when updating a prop (dataId, name) that can be linked to multiple datasets
  * @returns {Object} nextState
  * @public
  */
+/* eslint-disable complexity,max-statements */
 export function setFilterUpdater(state, action) {
-  const {idx, prop, value, valueIndex = 0} = action;
+  const {idx, prop, value, valueIndex} = action;
 
   const oldFilter = state.filters[idx];
   let newFilter = set([prop], value, oldFilter);
   let newState = state;
 
+  const currentValueIndex = valueIndex || 0;
   const {dataId} = newFilter;
 
   // Ensuring backward compatibility
-  let datasetIds = toArray(dataId);
+  let datasetIdsToFilter = toArray(dataId);
 
   switch (prop) {
-    // TODO: Next PR for UI if we update dataId, we need to consider two cases:
-    // 1. dataId is empty: create a default filter
-    // 2. Add a new dataset id
     case FILTER_UPDATER_PROPS.dataId:
-      // if trying to update filter dataId. create an empty new filter
-      newFilter = updateFilterDataId(dataId);
+      // if no index is provided we replace the  current filter with a new one
+      if (oldFilter.dataId.length === 0 || Array.isArray(value)) {
+        newFilter = updateFilterDataId(dataId);
+      } else if (valueIndex) {
+        // if we specify an index, we are going to replace an existing value
+        newFilter.dataId[valueIndex] = value;
+      } else {
+        // otherwise we are going to append it
+        newFilter.dataId = [...oldFilter.dataId, value];
+      }
       break;
-
     case FILTER_UPDATER_PROPS.name:
+      // if value is an array replace all elements and must re-filter everything
+      // we could do some optmization in case some elements are the same
       // we are supporting the current functionality
-      // TODO: Next PR for UI filter name will only update filter name but it won't have side effects
-      // we are gonna use pair of datasets and fieldIdx to update the filter
-      const datasetId = newFilter.dataId[valueIndex];
-      const {filter: updatedFilter, dataset: newDataset} = applyFilterFieldName(
-        newFilter,
-        state.datasets[datasetId],
-        value,
-        valueIndex,
-        {mergeDomain: false}
-      );
-      if (!updatedFilter) {
-        return state;
+      if (Array.isArray(value)) {
+        const names = toArray(value);
+        names.forEach((name, index) => {
+          const datasetId = newFilter.dataId[currentValueIndex];
+          const {filter: updatedFilter, dataset: newDataset} = applyFilterFieldName(
+            newFilter,
+            state.datasets[datasetId],
+            name,
+            index,
+            // merge domain only if we have multiple datasets
+            {mergeDomain: value.length > 1}
+          );
+
+          if (updatedFilter) {
+            newFilter = applyFilterGPU(updatedFilter, state.filters);
+            newState = set(['datasets', datasetId], newDataset, state);
+          }
+        });
+      } else {
+        const datasetId = newFilter.dataId[currentValueIndex];
+        const {filter: updatedFilter, dataset: newDataset} = applyFilterFieldName(
+          newFilter,
+          state.datasets[datasetId],
+          value,
+          valueIndex,
+          // merge domain only if we have multiple datasets
+          {mergeDomain: newFilter.dataId.length > 1}
+        );
+
+        if (!updatedFilter) {
+          return state;
+        }
+
+        newFilter.name = Object.assign([].concat(oldFilter.name), {[currentValueIndex]: value});
+        newFilter = applyFilterGPU(updatedFilter, state.filters);
+        newState = set(['datasets', datasetId], newDataset, state);
+        datasetIdsToFilter = [datasetIdsToFilter[currentValueIndex]];
       }
 
-      newFilter = updatedFilter;
-
-      if (newFilter.gpu) {
-        newFilter = setFilterGpuMode(newFilter, state.filters);
-        newFilter = assignGpuChannel(newFilter, state.filters);
-      }
-
-      newState = set(['datasets', datasetId], newDataset, state);
-
-      // only filter the current dataset
       break;
     case FILTER_UPDATER_PROPS.layerId:
       // We need to update only datasetId/s if we have added/removed layers
       // - check for layerId changes (XOR works because of string values)
       // if no differences between layerIds, don't do any filtering
       const layerIdDifference = xor(newFilter.layerId, oldFilter.layerId);
+
+      if (!layerIdDifference.length) {
+        return state;
+      }
 
       const layerDataIds = uniq(
         layerIdDifference
@@ -574,8 +599,8 @@ export function setFilterUpdater(state, action) {
           .filter(d => d)
       );
 
-      // only filter datasetsIds
-      datasetIds = layerDataIds;
+      // only filter datasetIds
+      datasetIdsToFilter = layerDataIds;
 
       // Update newFilter dataIds
       const newDataIds = uniq(
@@ -609,13 +634,6 @@ export function setFilterUpdater(state, action) {
   // save new filters to newState
   newState = set(['filters', idx], newFilter, newState);
 
-  // if we are currently setting a prop that only requires to filter the current
-  // dataset we will pass only the current dataset to applyFiltersToDatasets and
-  // updateAllLayerDomainData otherwise we pass the all list of datasets as defined in dataId
-  const datasetIdsToFilter = LIMITED_FILTER_EFFECT_PROPS[prop]
-    ? [datasetIds[valueIndex]]
-    : datasetIds;
-
   // filter data
   const filteredDatasets = applyFiltersToDatasets(
     datasetIdsToFilter,
@@ -625,12 +643,14 @@ export function setFilterUpdater(state, action) {
   );
 
   newState = set(['datasets'], filteredDatasets, newState);
+
   // dataId is an array
   // pass only the dataset we need to update
   newState = updateAllLayerDomainData(newState, datasetIdsToFilter, newFilter);
 
   return newState;
 }
+/* eslint-enable complexity */
 
 /**
  * Set the property of a filter plot

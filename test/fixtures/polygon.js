@@ -195,3 +195,10 @@ export const mockPolygonData = {
     }
   }
 };
+
+export const mockPolygonSecondData = [
+  [11.25, 30.5, 45.5, 32.5],
+  [11.25, 35.5, 45.5, 36.5],
+  [18.25, 30.5, 47.5, 32.5],
+  [18.25, 35.5, 47.5, 36.5]
+];

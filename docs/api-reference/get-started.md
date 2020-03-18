@@ -79,9 +79,9 @@ this.props.dispatch(
       readOnly: false
     },
     // config
-    config: {
+    `config: {
       mapStyle: {styleType: 'light'}
-    }
+    }`
   })
 );
 ```

@@ -20,50 +20,48 @@
 
 import React from 'react';
 import styled from 'styled-components';
-import {createLinearGradient} from 'utils/color-utils';
-import {StyledPanelHeader} from 'components/common/styled-components';
+import PropTypes from 'prop-types';
+import PanelHeaderAction from 'components/side-panel/panel-header-action';
+import {Trash} from 'components/common/icons';
 
-export const StyledFilterTag = styled(StyledPanelHeader)`
-  padding: 0 4px;
-
-  border-left: 3px solid;
-  ${props =>
-    props.labelRCGColorValues && props.labelRCGColorValues.length > 0
-      ? `border-image: ${createLinearGradient('bottom', props.labelRCGColorValues)} 3;`
-      : 'border-color: transparent;'}
-`;
-
-const StyledChildrenContainer = styled.div`
-  display: flex;
-  align-items: flex-start;
-  flex: 2;
+const StyledPanelActions = styled.div`
   padding-top: 8px;
-`;
-
-const StyledFilterHeaderContainer = styled(StyledPanelHeader)`
   display: flex;
-  height: unset;
-  align-items: flex-start;
 `;
 
-FilterPanelHeaderFactory.deps = [];
-
-function FilterPanelHeaderFactory() {
-  const FilterPanelHeader = ({children, datasets}) => (
-    <StyledFilterHeaderContainer className="filter-panel__header">
-      <StyledFilterTag
-        className="filter-panel__tag"
-        labelRCGColorValues={datasets.map(d => d.color)}
+function FilterPanelHeaderActionsFactory() {
+  const FilterPanelHeaderActions = ({actions = [], filter, removeFilter}) => (
+    <StyledPanelActions>
+      {actions.map(panelAction => (
+        <PanelHeaderAction
+          id={panelAction.id}
+          key={panelAction.id}
+          onClick={panelAction.onClick}
+          tooltip={panelAction.tooltip}
+          IconComponent={panelAction.iconComponent}
+          active={panelAction.active}
+        />
+      ))}
+      <PanelHeaderAction
+        id={filter.id}
+        tooltip="delete"
+        tooltipType="error"
+        onClick={removeFilter}
+        hoverColor={'errorColor'}
+        IconComponent={Trash}
       />
-      <StyledChildrenContainer className="filter-panel__actions">
-        {children}
-      </StyledChildrenContainer>
-    </StyledFilterHeaderContainer>
+    </StyledPanelActions>
   );
 
-  FilterPanelHeader.displayName = 'FilterPanelHeader';
+  FilterPanelHeaderActions.propTypes = {
+    actions: PropTypes.arrayOf(PropTypes.object),
+    filter: PropTypes.object.isRequired,
+    removeFilter: PropTypes.func.isRequired
+  };
 
-  return FilterPanelHeader;
+  FilterPanelHeaderActions.displayName = 'FilterPanelHeaderActions';
+
+  return FilterPanelHeaderActions;
 }
 
-export default FilterPanelHeaderFactory;
+export default FilterPanelHeaderActionsFactory;

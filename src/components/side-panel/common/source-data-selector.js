@@ -45,7 +45,7 @@ export default function SourceDataSelectorFactory(DatasetTag) {
     );
 
     render() {
-      const {dataId, disabled, onSelect, defaultValue, inputTheme} = this.props;
+      const {dataId, onSelect, defaultValue, inputTheme} = this.props;
       const dsOptions = this.dsOptionsSelector(this.props);
 
       return (
@@ -60,7 +60,6 @@ export default function SourceDataSelectorFactory(DatasetTag) {
             multiSelect={false}
             onChange={onSelect}
             placeholder={defaultValue}
-            disabled={Boolean(disabled)}
             displayOption={'label'}
             DropDownLineItemRenderComponent={DatasetItem}
           />
@@ -72,5 +71,6 @@ export default function SourceDataSelectorFactory(DatasetTag) {
   SourceDataSelector.defaultProps = {
     defaultValue: defaultPlaceHolder
   };
+
   return SourceDataSelector;
 }

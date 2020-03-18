@@ -172,3 +172,11 @@ export function getError(err) {
 
   return null;
 }
+
+export function and_(...conditions) {
+  return conditions.every(c => Boolean(c));
+}
+
+export function or_(...conditions) {
+  return conditions.some(c => Boolean(c));
+}
