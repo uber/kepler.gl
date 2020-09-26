@@ -277,6 +277,7 @@ class ItemSelector extends Component {
       className: classnames({
         active: this.state.showTypeahead
       }),
+      displayOption,
       disabled: this.props.disabled,
       onClick: this._showTypeahead,
       error: this.props.isError,
@@ -294,7 +295,6 @@ class ItemSelector extends Component {
               {...dropdownSelectProps}
               selectedItems={toArray(this.props.selectedItems)}
               placeholder={this.props.placeholder}
-              displayOption={displayOption}
               removeItem={this._removeItem}
               CustomChickletComponent={this.props.CustomChickletComponent}
               inputTheme={this.props.inputTheme}

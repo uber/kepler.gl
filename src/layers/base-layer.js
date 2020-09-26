@@ -335,7 +335,7 @@ class Layer {
     return {
       label: this.visConfigSettings[this.visualChannels[key].range].label,
       measure: this.config[this.visualChannels[key].field]
-        ? this.config[this.visualChannels[key].field].name
+        ? (this.config[this.visualChannels[key].field].displayName || this.config[this.visualChannels[key].field].name)
         : this.visualChannels[key].defaultMeasure
     };
   }
