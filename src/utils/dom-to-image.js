@@ -115,7 +115,7 @@ function toSvg(node, options) {
 
 /**
  * @param {Node} node - The DOM Node object to render
- * @param {Object} options - Rendering options, @see {@link toSvg}
+ * @param {Object} options - Rendering options
  * @return {Promise} - A promise that is fulfilled with a Uint8Array containing RGBA pixel data.
  * */
 function toPixelData(node, options) {
@@ -126,7 +126,7 @@ function toPixelData(node, options) {
 
 /**
  * @param {Node} node - The DOM Node object to render
- * @param {Object} options - Rendering options, @see {@link toSvg}
+ * @param {Object} options - Rendering options
  * @return {Promise} - A promise that is fulfilled with a PNG image data URL
  * */
 function toPng(node, options) {
@@ -135,7 +135,7 @@ function toPng(node, options) {
 
 /**
  * @param {Node} node - The DOM Node object to render
- * @param {Object} options - Rendering options, @see {@link toSvg}
+ * @param {Object} options - Rendering options
  * @return {Promise} - A promise that is fulfilled with a JPEG image data URL
  * */
 function toJpeg(node, options) {
@@ -145,7 +145,7 @@ function toJpeg(node, options) {
 
 /**
  * @param {Node} node - The DOM Node object to render
- * @param {Object} options - Rendering options, @see {@link toSvg}
+ * @param {Object} options - Rendering options
  * @return {Promise} - A promise that is fulfilled with a PNG image blob
  * */
 function toBlob(node, options) {

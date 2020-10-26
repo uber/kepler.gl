@@ -62,6 +62,8 @@ test('GeocoderPanel - render', t => {
           fields: [
             {
               name: 'lt',
+              id: 'lt',
+              displayName: 'lt',
               format: '',
               fieldIdx: 0,
               type: 'integer',
@@ -70,6 +72,8 @@ test('GeocoderPanel - render', t => {
             },
             {
               name: 'ln',
+              id: 'ln',
+              displayName: 'ln',
               format: '',
               fieldIdx: 1,
               type: 'integer',
@@ -78,6 +82,8 @@ test('GeocoderPanel - render', t => {
             },
             {
               name: 'icon',
+              id: 'icon',
+              displayName: 'icon',
               format: '',
               fieldIdx: 2,
               type: 'string',
@@ -86,6 +92,8 @@ test('GeocoderPanel - render', t => {
             },
             {
               name: 'text',
+              id: 'text',
+              displayName: 'text',
               format: '',
               fieldIdx: 3,
               type: 'string',

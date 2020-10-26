@@ -42,6 +42,8 @@ export const processedFeature = {
 export const processedFeatureFields = [
   {
     name: '_geojson',
+    id: '_geojson',
+    displayName: '_geojson',
     format: '',
     fieldIdx: 0,
     type: 'geojson',
@@ -50,6 +52,8 @@ export const processedFeatureFields = [
   },
   {
     name: 'lat',
+    id: 'lat',
+    displayName: 'lat',
     format: '',
     fieldIdx: 1,
     type: 'real',
@@ -58,6 +62,8 @@ export const processedFeatureFields = [
   },
   {
     name: 'lng',
+    id: 'lng',
+    displayName: 'lng',
     format: '',
     fieldIdx: 2,
     type: 'real',
@@ -66,6 +72,8 @@ export const processedFeatureFields = [
   },
   {
     name: 'icon',
+    id: 'icon',
+    displayName: 'icon',
     format: '',
     fieldIdx: 3,
     type: 'string',
@@ -100,6 +108,8 @@ export const processedFeatureRows = [
 export const processedFields = [
   {
     name: '_geojson',
+    id: '_geojson',
+    displayName: '_geojson',
     format: '',
     fieldIdx: 0,
     type: 'geojson',
@@ -108,6 +118,8 @@ export const processedFields = [
   },
   {
     name: 'fillColor',
+    id: 'fillColor',
+    displayName: 'fillColor',
     format: '',
     fieldIdx: 1,
     type: 'geojson',
@@ -116,6 +128,8 @@ export const processedFields = [
   },
   {
     name: 'radius',
+    id: 'radius',
+    displayName: 'radius',
     format: '',
     fieldIdx: 2,
     type: 'integer',
@@ -124,6 +138,8 @@ export const processedFields = [
   },
   {
     name: 'id',
+    id: 'id',
+    displayName: 'id',
     format: '',
     fieldIdx: 3,
     type: 'string',

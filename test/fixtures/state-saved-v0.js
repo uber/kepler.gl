@@ -1156,6 +1156,8 @@ mergedLayer2.config = {
   isVisible: true,
   colorField: {
     name: 'song_name',
+    id: 'song_name',
+    displayName: 'song_name',
     type: 'string',
     format: '',
     fieldIdx: 0,
@@ -1169,6 +1171,8 @@ mergedLayer2.config = {
   strokeColorDomain: [0, 1],
   sizeField: {
     name: 'int_range',
+    id: 'int_range',
+    displayName: 'int_range',
     format: '',
     type: 'integer',
     fieldIdx: 9,
@@ -1236,6 +1240,8 @@ mergedLayer3.config = {
   isVisible: true,
   colorField: {
     name: 'int_range',
+    displayName: 'int_range',
+    id: 'int_range',
     type: 'integer',
     format: '',
     fieldIdx: 9,
@@ -1299,6 +1305,8 @@ mergedLayer4.config = {
   isVisible: true,
   colorField: {
     name: 'ID',
+    displayName: 'ID',
+    id: 'ID',
     type: 'integer',
     format: '',
     fieldIdx: 3,

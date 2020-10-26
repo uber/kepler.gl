@@ -268,7 +268,6 @@ test('VisStateMerger.current -> mergeLayers -> toEmptyState', t => {
   const appStateToSave = SchemaManager.save(stateToSave);
   const configToSave = appStateToSave.config;
   const configParsed = SchemaManager.parseSavedConfig(configToSave);
-
   const oldState = cloneDeep(InitialState);
   const oldVisState = oldState.visState;
 

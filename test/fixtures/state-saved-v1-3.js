@@ -359,6 +359,8 @@ mergedLayer0.config = {
   isVisible: true,
   colorField: {
     name: 'deliver_radius',
+    id: 'deliver_radius',
+    displayName: 'deliver_radius',
     type: 'integer',
     format: '',
     fieldIdx: 0,
@@ -374,6 +376,8 @@ mergedLayer0.config = {
   strokeColorScale: 'quantile',
   sizeField: {
     name: 'deliver_radius',
+    id: 'deliver_radius',
+    displayName: 'deliver_radius',
     type: 'integer',
     format: '',
     fieldIdx: 0,

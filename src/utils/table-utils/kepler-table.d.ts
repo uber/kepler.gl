@@ -13,6 +13,8 @@ export type Field = {
   fieldIdx: number;
   valueAccessor(v: any[]): any;
   filterProps?: any;
+  metadata?: any;
+  displayName: string;
 };
 
 export type GpuFilter = {

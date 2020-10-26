@@ -32,4 +32,4 @@ require('./layer-tests');
 require('./reducers');
 
 // test processors
-require('./file-handler');
+require('./file-handler-test');

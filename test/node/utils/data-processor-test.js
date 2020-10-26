@@ -145,32 +145,40 @@ test('Processor -> processCsvData: duplicated field name', t => {
     fields: [
       {
         name: 'column1',
+        id: 'column1',
         format: '',
         fieldIdx: 0,
+        displayName: 'column1',
         type: 'string',
         analyzerType: 'STRING',
         valueAccessor: values => values[0]
       },
       {
         name: 'column1-0',
+        id: 'column1-0',
         format: '',
         fieldIdx: 1,
+        displayName: 'column1-0',
         type: 'string',
         analyzerType: 'STRING',
         valueAccessor: values => values[1]
       },
       {
         name: 'column1-1',
+        id: 'column1-1',
         format: '',
         fieldIdx: 2,
+        displayName: 'column1-1',
         type: 'string',
         analyzerType: 'STRING',
         valueAccessor: values => values[2]
       },
       {
         name: 'column2',
+        id: 'column2',
         format: '',
         fieldIdx: 3,
+        displayName: 'column2',
         type: 'string',
         analyzerType: 'STRING',
         valueAccessor: values => values[3]
@@ -270,6 +278,8 @@ test('Processor => processGeojson: parse rows', t => {
   const expectedFields = [
     {
       name: '_geojson',
+      id: '_geojson',
+      displayName: '_geojson',
       format: '',
       fieldIdx: 0,
       type: 'geojson',
@@ -278,6 +288,8 @@ test('Processor => processGeojson: parse rows', t => {
     },
     {
       name: 'TRIPS',
+      id: 'TRIPS',
+      displayName: 'TRIPS',
       format: '',
       fieldIdx: 1,
       type: 'integer',
@@ -286,6 +298,8 @@ test('Processor => processGeojson: parse rows', t => {
     },
     {
       name: 'RATE',
+      id: 'RATE',
+      displayName: 'RATE',
       format: '',
       fieldIdx: 2,
       type: 'string',
@@ -294,6 +308,8 @@ test('Processor => processGeojson: parse rows', t => {
     },
     {
       name: 'TIME',
+      id: 'TIME',
+      displayName: 'TIME',
       format: 'x',
       fieldIdx: 3,
       type: 'timestamp',
@@ -554,6 +570,8 @@ test('Processor -> processRowObject', t => {
         fields: [
           {
             name: 'a',
+            id: 'a',
+            displayName: 'a',
             type: 'integer',
             format: '',
             fieldIdx: 0,
@@ -562,6 +580,8 @@ test('Processor -> processRowObject', t => {
           },
           {
             name: 'b',
+            id: 'b',
+            displayName: 'b',
             type: 'string',
             format: '',
             fieldIdx: 1,
@@ -570,6 +590,8 @@ test('Processor -> processRowObject', t => {
           },
           {
             name: 'c',
+            id: 'c',
+            displayName: 'c',
             type: 'boolean',
             format: '',
             fieldIdx: 2,
@@ -578,6 +600,8 @@ test('Processor -> processRowObject', t => {
           },
           {
             name: 'd',
+            id: 'd',
+            displayName: 'd',
             type: 'real',
             format: '',
             fieldIdx: 3,

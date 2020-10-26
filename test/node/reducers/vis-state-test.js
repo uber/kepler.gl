@@ -110,6 +110,8 @@ const mockData = {
 const expectedFields = [
   {
     name: 'start_point_lat',
+    displayName: 'start_point_lat',
+    id: 'start_point_lat',
     type: 'real',
     fieldIdx: 0,
     analyzerType: 'FLOAT',
@@ -118,6 +120,8 @@ const expectedFields = [
   },
   {
     name: 'start_point_lng',
+    displayName: 'start_point_lng',
+    id: 'start_point_lng',
     type: 'real',
     fieldIdx: 1,
     analyzerType: 'FLOAT',
@@ -126,6 +130,8 @@ const expectedFields = [
   },
   {
     name: 'end_point_lat',
+    displayName: 'end_point_lat',
+    id: 'end_point_lat',
     type: 'real',
     fieldIdx: 2,
     analyzerType: 'FLOAT',
@@ -134,6 +140,8 @@ const expectedFields = [
   },
   {
     name: 'end_point_lng',
+    displayName: 'end_point_lng',
+    id: 'end_point_lng',
     type: 'real',
     fieldIdx: 3,
     analyzerType: 'FLOAT',
@@ -145,6 +153,8 @@ const expectedFields = [
 const mockFilter = {
   fieldIdx: 0,
   name: mockData.fields[0].name,
+  displayName: mockData.fields[0].name,
+  id: mockData.fields[0].name,
   type: 'range',
   fieldType: 'real',
   value: [12.25, 12.28]
@@ -154,21 +164,29 @@ const mockRawData = {
   fields: [
     {
       name: 'start_point_lat',
+      id: 'start_point_lat',
+      displayName: 'start_point_lat',
       type: 'real',
       fieldIdx: 0
     },
     {
       name: 'start_point_lng',
+      id: 'start_point_lng',
+      displayName: 'start_point_lng',
       type: 'real',
       fieldIdx: 1
     },
     {
       name: 'end_point_lat',
+      id: 'end_point_lat',
+      displayName: 'end_point_lat',
       type: 'real',
       fieldIdx: 2
     },
     {
       name: 'end_point_lng',
+      id: 'end_point_lng',
+      displayName: 'end_point_lng',
       type: 'real',
       fieldIdx: 3
     }
@@ -2636,6 +2654,8 @@ test('#visStateReducer -> SET_FILTER_PLOT', t => {
     yAxis: {
       type: 'integer',
       name: 'id',
+      displayName: 'id',
+      id: 'id',
       format: '',
       fieldIdx: 6,
       analyzerType: 'INT',
@@ -4933,7 +4953,7 @@ test('#visStateReducer -> LOAD_FILES', async t => {
       filesToLoad: [{type: 'text/csv', name: 'test-file-2.csv'}],
       onFinish: VisStateActions.loadFilesSuccess
     },
-    'fileLoading should update to add result to fileCache'
+    'fileLoading should update to add result to fileCache 1'
   );
   const [task5, ...more5] = drainTasksForTesting();
   t.equal(more5.length, 0, 'should ceate 1 task');
@@ -4952,7 +4972,7 @@ test('#visStateReducer -> LOAD_FILES', async t => {
       loaders: [],
       loadOptions: {}
     },
-    'should return an LOAD_FILE_TASK with 2nd file to load'
+    'should return an LOAD_FILE_TASK with 2nd file to load 2'
   );
   const expectedFileLoadingProgress6 = {
     'test-file.csv': {percent: 1, message: 'Done', fileName: 'test-file.csv', error: null},
@@ -4970,7 +4990,7 @@ test('#visStateReducer -> LOAD_FILES', async t => {
       filesToLoad: [],
       onFinish: VisStateActions.loadFilesSuccess
     },
-    'fileLoading should update to add result to fileCache'
+    'fileLoading should update to add result to fileCache 3'
   );
   // fast forward so we can test final result
   const asyncIterator2 = run('test-file-2.csv');

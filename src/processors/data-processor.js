@@ -308,6 +308,8 @@ export function getFieldsFromData(data, fieldOrder) {
 
     return {
       name,
+      id: name,
+      displayName: name,
       format,
       fieldIdx: index,
       type: analyzerTypeToFieldType(type),

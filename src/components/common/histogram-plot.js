@@ -62,7 +62,7 @@ function HistogramPlotFactory() {
     const y = useMemo(
       () =>
         scaleLinear()
-          .domain([0, max(histogram, getValue)])
+          .domain([0, Number(max(histogram, getValue))])
           .range([0, height]),
       [histogram, height, getValue]
     );

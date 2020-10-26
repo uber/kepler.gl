@@ -41,57 +41,57 @@ test('layerUtils -> findDefaultLayer.1', t => {
     // layer 1
     {
       name: 'one_lat',
-      tableFieldIndex: 1
+      fieldIdx: 0
     },
     {
       name: 'one_lng',
-      tableFieldIndex: 2
+      fieldIdx: 1
     },
     // layer 2
     {
       name: 'two_two.lng',
-      tableFieldIndex: 3
+      fieldIdx: 2
     },
     {
       name: 'two_two.lat',
-      tableFieldIndex: 4
+      fieldIdx: 3
     },
     // layer 3
     {
       name: 'three longitude',
-      tableFieldIndex: 5
+      fieldIdx: 4
     },
     {
       name: 'three latitude',
-      tableFieldIndex: 6
+      fieldIdx: 5
     },
     // layer 4
     {
       name: 'four._.lon',
-      tableFieldIndex: 7
+      fieldIdx: 6
     },
     {
       name: 'four._.lat',
-      tableFieldIndex: 8
+      fieldIdx: 7
     },
     // layer 5
     {
       name: 'lat',
-      tableFieldIndex: 9
+      fieldIdx: 8
     },
     {
       name: 'lon',
-      tableFieldIndex: 10
+      fieldIdx: 9
     },
     // non layer
     //
     {
       name: 'non_layer_longitude.alt',
-      tableFieldIndex: 11
+      fieldIdx: 10
     },
     {
       name: 'non_layer_latitude.alt',
-      tableFieldIndex: 12
+      fieldIdx: 11
     }
   ];
 
@@ -265,7 +265,7 @@ test('layerUtils -> findDefaultLayer.2', t => {
     // layer 1
     {
       name: 'all_points',
-      tableFieldIndex: 1
+      fieldIdx: 0
     }
   ];
   const dataId = 'milkshake';
@@ -325,11 +325,11 @@ test('layerUtils -> findDefaultLayer.3', t => {
     // layer 1 & 2
     {
       name: 'begintrip_lat',
-      tableFieldIndex: 1
+      fieldIdx: 0
     },
     {
       name: 'begintrip_lng',
-      tableFieldIndex: 2
+      fieldIdx: 1
     }
   ];
 
@@ -375,20 +375,20 @@ test('layerUtils -> findDefaultLayer.4', t => {
     // layer 1 (grid), 2 (arc), 3 (point)
     {
       name: 'begintrip_lat',
-      tableFieldIndex: 1
+      fieldIdx: 0
     },
     {
       name: 'begintrip_lng',
-      tableFieldIndex: 2
+      fieldIdx: 1
     },
     // layer 2 (arc), 4 (point)
     {
       name: 'dropoff_lat',
-      tableFieldIndex: 3
+      fieldIdx: 2
     },
     {
       name: 'dropoff_lng',
-      tableFieldIndex: 4
+      fieldIdx: 3
     }
   ];
 
@@ -503,11 +503,11 @@ test('layerUtils -> findDefaultLayer.5', t => {
     // layer 1
     {
       name: 'one_late',
-      tableFieldIndex: 1
+      fieldIdx: 0
     },
     {
       name: 'one_lng',
-      tableFieldIndex: 2
+      fieldIdx: 1
     }
   ];
 
@@ -693,25 +693,25 @@ test('layerUtils -> findDefaultLayer:IconLayer', t => {
   const inputFields = [
     {
       name: 'begintrip_lat',
-      tableFieldIndex: 1
+      fieldIdx: 0
     },
     {
       name: 'begintrip_lng',
-      tableFieldIndex: 2
+      fieldIdx: 1
     },
     {
       name: 'dropoff_lat',
-      tableFieldIndex: 3
+      fieldIdx: 2
     },
     {
       name: 'dropoff_lng',
-      tableFieldIndex: 4
+      fieldIdx: 3
     }
   ];
   const fieldPairs = findPointFieldPairs(inputFields);
 
-  const eventIcon = [{name: 'event_icon', tableFieldIndex: 5}];
-  const nameIcon = [{name: 'name.icon', tableFieldIndex: 5}];
+  const eventIcon = [{name: 'event_icon', fieldIdx: 4}];
+  const nameIcon = [{name: 'name.icon', fieldIdx: 4}];
 
   t.equal(
     findDefaultLayer(
