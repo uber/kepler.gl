@@ -26,16 +26,12 @@ import {createSelector} from 'reselect';
 import get from 'lodash.get';
 import debounce from 'lodash.debounce';
 
-import OptionDropdown from './option-dropdown';
-
 import Grid from './grid';
-import Button from './button';
-import {ArrowUp, ArrowDown} from 'components/common/icons';
-import {VertThreeDots} from 'components/common/icons';
+import HeaderCellFactory from './header-cell';
 import {parseFieldValue} from 'utils/data-utils';
 import {adjustCellsToContainer} from './cell-size';
 
-import {ALL_FIELD_TYPES, SORT_ORDER} from 'constants/default-settings';
+import {ALL_FIELD_TYPES} from 'constants/default-settings';
 import FieldTokenFactory from 'components/common/field-token';
 
 const defaultHeaderRowHeight = 55;
@@ -109,7 +105,7 @@ export const Container = styled.div`
     }
 
     .header-grid {
-      overflow: hidden !important;
+      overflow-x: hidden !important;
     }
 
     .body-grid {
@@ -304,8 +300,8 @@ export const TableSection = ({
     }}
   </AutoSizer>
 );
-DataTableFactory.deps = [FieldTokenFactory];
-function DataTableFactory(FieldToken) {
+DataTableFactory.deps = [FieldTokenFactory, HeaderCellFactory];
+function DataTableFactory(FieldToken, HeaderCell) {
   class DataTable extends Component {
     static defaultProps = {
       rows: [],
@@ -320,7 +316,8 @@ function DataTableFactory(FieldToken) {
 
     state = {
       cellSizeCache: {},
-      moreOptionsColumn: null
+      moreOptionsColumn: null,
+      extraHeaderRowHeight: 0
     };
 
     componentDidMount() {
@@ -379,97 +376,6 @@ function DataTableFactory(FieldToken) {
 
     scaleCellsToWidth = debounce(this.doScaleCellsToWidth, 300);
 
-    renderHeaderCell = (
-      columns,
-      isPinned,
-      props,
-      toggleMoreOptions,
-      moreOptionsColumn,
-      TokenComponent
-    ) => {
-      // eslint-disable-next-line react/display-name
-      return cellInfo => {
-        const {columnIndex, key, style} = cellInfo;
-        const {
-          colMeta,
-          sortColumn,
-          sortTableColumn,
-          unsortColumn,
-          pinTableColumn,
-          copyTableColumn,
-          dataId
-        } = props;
-
-        const column = columns[columnIndex];
-        const isGhost = column.ghost;
-        const isSorted = sortColumn[column];
-        const firstCell = columnIndex === 0;
-        return (
-          <div
-            className={classnames('header-cell', {
-              [`column-${columnIndex}`]: true,
-              'pinned-header-cell': isPinned,
-              'first-cell': firstCell
-            })}
-            key={key}
-            style={style}
-            onClick={e => {
-              e.shiftKey ? sortTableColumn(dataId, column) : null;
-            }}
-            onDoubleClick={() => sortTableColumn(dataId, column)}
-            title={column}
-          >
-            {isGhost ? (
-              <div />
-            ) : (
-              <>
-                <section className="details">
-                  <div className="col-name">
-                    <div className="col-name__left">
-                      <div className="col-name__name">{column}</div>
-                      <Button
-                        className="col-name__sort"
-                        onClick={() => sortTableColumn(dataId, column)}
-                      >
-                        {isSorted ? (
-                          isSorted === SORT_ORDER.ASCENDING ? (
-                            <ArrowUp height="14px" />
-                          ) : (
-                            <ArrowDown height="14px" />
-                          )
-                        ) : null}
-                      </Button>
-                    </div>
-                    <Button className="more" onClick={() => toggleMoreOptions(column)}>
-                      <VertThreeDots height="14px" />
-                    </Button>
-                  </div>
-
-                  <FieldToken type={colMeta[column]} />
-                </section>
-
-                <section className="options">
-                  <OptionDropdown
-                    isOpened={moreOptionsColumn === column}
-                    type={colMeta[column]}
-                    column={column}
-                    toggleMoreOptions={toggleMoreOptions}
-                    sortTableColumn={mode => sortTableColumn(dataId, column, mode)}
-                    sortMode={sortColumn && sortColumn[column]}
-                    pinTableColumn={() => pinTableColumn(dataId, column)}
-                    copyTableColumn={() => copyTableColumn(dataId, column)}
-                    isSorted={isSorted}
-                    isPinned={isPinned}
-                    unsortColumn={unsortColumn}
-                  />
-                </section>
-              </>
-            )}
-          </div>
-        );
-      };
-    };
-
     renderDataCell = (columns, isPinned, props) => {
       return cellInfo => {
         const {columnIndex, key, style, rowIndex} = cellInfo;
@@ -507,6 +413,21 @@ function DataTableFactory(FieldToken) {
         return cell;
       };
     };
+
+    renderHeaderCell(columns, isPinned, props, toggleMoreOptions, moreOptionsColumn) {
+      return cellInfo => (
+        <HeaderCell
+          cellInfo={cellInfo}
+          key={cellInfo.columnIndex}
+          columns={columns}
+          isPinned={isPinned}
+          props={props}
+          toggleMoreOptions={toggleMoreOptions}
+          moreOptionsColumn={moreOptionsColumn}
+          style={{}}
+        />
+      );
+    }
     render() {
       const {rows, pinnedColumns, theme = {}, fixedWidth, fixedHeight} = this.props;
       const unpinnedColumns = this.unpinnedColumns(this.props);
