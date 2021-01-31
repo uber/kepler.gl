@@ -26,7 +26,7 @@ import styled from 'styled-components';
 import SliderHandle from './slider-handle';
 import SliderBarHandle from './slider-bar-handle';
 import {normalizeSliderValue} from 'utils/data-utils';
-import { clamp } from 'utils/data-utils';
+import {clamp} from 'utils/data-utils';
 
 function noop() {}
 

@@ -24,12 +24,11 @@ import PropTypes from 'prop-types';
 import MapboxGLMap from 'react-map-gl';
 import DeckGL from '@deck.gl/react';
 import {createSelector} from 'reselect';
-import WebMercatorViewport from 'viewport-mercator-project';
 import {errorNotification} from 'utils/notifications-utils';
 
 // components
-import MapPopoverFactory from 'components/map/map-popover';
 import MapControlFactory from 'components/map/map-control';
+import CombinedPopoversFactory from 'components/combined-popovers';
 import {StyledMapContainer, StyledAttrbution} from 'components/common/styled-components';
 
 import EditorFactory from './editor/editor';
@@ -39,7 +38,7 @@ import {generateMapboxLayers, updateMapboxLayers} from 'layers/mapbox-utils';
 import {OVERLAY_TYPE} from 'layers/base-layer';
 import {setLayerBlending} from 'utils/gl-utils';
 import {transformRequest} from 'utils/map-style-utils/mapbox-utils';
-import {getLayerHoverProp, renderDeckGlLayer} from 'utils/layer-utils';
+import {renderDeckGlLayer} from 'utils/layer-utils';
 
 // default-settings
 import ThreeDBuildingLayer from 'deckgl-layers/3d-building-layer/3d-building-layer';
@@ -95,9 +94,9 @@ const Attribution = () => (
   </StyledAttrbution>
 );
 
-MapContainerFactory.deps = [MapPopoverFactory, MapControlFactory, EditorFactory];
+MapContainerFactory.deps = [CombinedPopoversFactory, MapControlFactory, EditorFactory];
 
-export default function MapContainerFactory(MapPopover, MapControl, Editor) {
+export default function MapContainerFactory(CombinedPopovers, MapControl, Editor) {
   class MapContainer extends Component {
     static propTypes = {
       // required
@@ -279,94 +278,6 @@ export default function MapContainerFactory(MapPopover, MapControl, Editor) {
     };
 
     /* component render functions */
-
-    /* eslint-disable complexity */
-    _renderMapPopover(layersToRender) {
-      // TODO: move this into reducer so it can be tested
-      const {
-        mapState,
-        hoverInfo,
-        clicked,
-        datasets,
-        interactionConfig,
-        layers,
-        mousePos: {mousePosition, coordinate, pinned}
-      } = this.props;
-
-      if (!mousePosition) {
-        return null;
-      }
-      // if clicked something, ignore hover behavior
-      let layerHoverProp = null;
-      let layerPinnedProp = null;
-      const position = {x: mousePosition[0], y: mousePosition[1]};
-      let pinnedPosition = {};
-
-      layerHoverProp = getLayerHoverProp({
-        interactionConfig,
-        hoverInfo,
-        layers,
-        layersToRender,
-        datasets
-      });
-
-      const compareMode = interactionConfig.tooltip.config
-        ? interactionConfig.tooltip.config.compareMode
-        : false;
-
-      const hasTooltip = pinned || clicked;
-      const hasComparisonTooltip = compareMode || (!clicked && !pinned);
-
-      if (hasTooltip) {
-        // project lnglat to screen so that tooltip follows the object on zoom
-        const viewport = new WebMercatorViewport(mapState);
-        const lngLat = clicked ? clicked.lngLat : pinned.coordinate;
-        pinnedPosition = this._getHoverXY(viewport, lngLat);
-        layerPinnedProp = getLayerHoverProp({
-          interactionConfig,
-          hoverInfo: clicked,
-          layers,
-          layersToRender,
-          datasets
-        });
-        if (layerHoverProp && layerPinnedProp) {
-          layerHoverProp.primaryData = layerPinnedProp.data;
-          layerHoverProp.compareType = interactionConfig.tooltip.config.compareType;
-        }
-      }
-      const commonProp = {
-        onClose: this._onCloseMapPopover,
-        mapW: mapState.width,
-        mapH: mapState.height,
-        zoom: mapState.zoom
-      };
-
-      return (
-        <div>
-          {hasTooltip && (
-            <MapPopover
-              {...pinnedPosition}
-              {...commonProp}
-              layerHoverProp={layerPinnedProp}
-              coordinate={interactionConfig.coordinate.enabled && (pinned || {}).coordinate}
-              frozen={Boolean(hasTooltip)}
-              isBase={compareMode}
-            />
-          )}
-          {hasComparisonTooltip && (
-            <MapPopover
-              {...position}
-              {...commonProp}
-              layerHoverProp={layerHoverProp}
-              coordinate={interactionConfig.coordinate.enabled && coordinate}
-            />
-          )}
-        </div>
-      );
-    }
-
-    /* eslint-enable complexity */
-
     _getHoverXY(viewport, lngLat) {
       const screenCoord = !viewport || !lngLat ? null : viewport.project(lngLat);
       return screenCoord && {x: screenCoord[0], y: screenCoord[1]};
@@ -467,6 +378,7 @@ export default function MapContainerFactory(MapPopover, MapControl, Editor) {
       uiStateActions.toggleMapControl(panelId, index);
     };
 
+    // eslint-disable-next-line complexity
     render() {
       const {
         mapState,
@@ -484,7 +396,10 @@ export default function MapContainerFactory(MapPopover, MapControl, Editor) {
         visStateActions,
         interactionConfig,
         editor,
-        index
+        index,
+        hoverInfo,
+        clicked,
+        mousePos
       } = this.props;
 
       const layersToRender = this.layersToRenderSelector(this.props);
@@ -505,6 +420,13 @@ export default function MapContainerFactory(MapPopover, MapControl, Editor) {
 
       const isEdit = mapControls.mapDraw ? mapControls.mapDraw.active : false;
       const hasGeocoderLayer = layers.find(l => l.id === GEOCODER_LAYER_ID);
+
+      const {mousePosition, pinned} = mousePos;
+      const hasTooltip = pinned || clicked;
+      const compareMode = interactionConfig.tooltip.config
+        ? interactionConfig.tooltip.config.compareMode
+        : false;
+      const hasComparisonTooltip = compareMode || (!clicked && !pinned);
 
       return (
         <StyledMapContainer style={MAP_STYLE.container}>
@@ -567,7 +489,22 @@ export default function MapContainerFactory(MapPopover, MapControl, Editor) {
               </MapComponent>
             </div>
           ) : null}
-          {this._renderMapPopover(layersToRender)}
+          {mousePosition ? (
+            <CombinedPopovers
+              mapState={mapState}
+              hoverInfo={hoverInfo}
+              clicked={clicked}
+              datasets={datasets}
+              interactionConfig={interactionConfig}
+              layers={layers}
+              {...mousePos}
+              hasTooltip={hasTooltip}
+              hasComparisonTooltip={hasComparisonTooltip}
+              compareMode={compareMode}
+              layersToRender={layersToRender}
+              onClosePopover={this._onCloseMapPopover}
+            />
+          ) : null}
           <Attribution />
         </StyledMapContainer>
       );
