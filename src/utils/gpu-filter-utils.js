@@ -155,7 +155,9 @@ function getEmptyFilterRange() {
 // By default filterValueAccessor expect each datum to be formated as {index, data}
 // data is the row in allData, and index is its index in allData
 const defaultGetIndex = d => d.index;
-const defaultGetData = d => d.data;
+const defaultGetData = d => {
+  return d.refDataContainer.row(d.index);
+};
 
 /**
  *
@@ -178,8 +180,8 @@ const getFilterValueAccessor = (channels, dataId, fields) => (
       filter.type === FILTER_TYPES.timeRange
         ? field.filterProps && Array.isArray(field.filterProps.mappedValue)
           ? field.filterProps.mappedValue[getIndex(d)]
-          : moment.utc(getData(d)[fieldIndex]).valueOf()
-        : getData(d)[fieldIndex];
+          : moment.utc(getData(d).valueAt(fieldIndex)).valueOf()
+        : getData(d).valueAt(fieldIndex);
 
     return notNullorUndefined(value) ? value - filter.domain[0] : Number.MIN_SAFE_INTEGER;
   });

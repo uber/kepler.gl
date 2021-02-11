@@ -158,6 +158,7 @@ class KeplerGlJupyter {
             color: d.color
           },
           data: {
+            // TODO old dataset def
             fields: d.fields,
             rows: d.allData
           }
@@ -169,12 +170,7 @@ class KeplerGlJupyter {
   }
 }
 
-export function addDataConfigToKeplerGl({
-  data: inputData,
-  config,
-  options,
-  store
-}) {
+export function addDataConfigToKeplerGl({data: inputData, config, options, store}) {
   const data = inputData ? dataToDatasets(inputData) : [];
   log(data);
 

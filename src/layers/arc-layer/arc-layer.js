@@ -26,14 +26,24 @@ import {hexToRgb} from 'utils/color-utils';
 import ArcLayerIcon from './arc-layer-icon';
 import {DEFAULT_LAYER_COLOR} from 'constants/default-settings';
 
-export const arcPosAccessor = ({lat0, lng0, lat1, lng1}) => d => [
-  d.data[lng0.fieldIdx],
-  d.data[lat0.fieldIdx],
-  0,
-  d.data[lng1.fieldIdx],
-  d.data[lat1.fieldIdx],
-  0
-];
+export const arcPosAccessor = ({lat0, lng0, lat1, lng1}) => d => {
+  if (d.refDataContainer) {
+    return [
+      d.refDataContainer.valueAt(d.index, lng0.fieldIdx),
+      d.refDataContainer.valueAt(d.index, lat0.fieldIdx),
+      0,
+      d.refDataContainer.valueAt(d.index, lng1.fieldIdx),
+      d.refDataContainer.valueAt(d.index, lat1.fieldIdx),
+      0
+    ];
+  }
+
+  throw Error('Missing data container in an accessor');
+
+  // return [d.data[lng0.fieldIdx], d.data[lat0.fieldIdx], 0,
+  //  d.data[lng1.fieldIdx], d.data[lat1.fieldIdx], 0
+  // ];
+};
 
 export const arcRequiredColumns = ['lat0', 'lng0', 'lat1', 'lng1'];
 export const arcColumnLabels = {
@@ -127,20 +137,20 @@ export default class ArcLayer extends Layer {
     return {props: [props]};
   }
 
-  calculateDataAttribute({allData, filteredIndex}, getPosition) {
+  calculateDataAttribute({dataContainer, filteredIndex}, getPosition) {
     const data = [];
     for (let i = 0; i < filteredIndex.length; i++) {
       const index = filteredIndex[i];
-      const pos = getPosition({data: allData[index]});
+      const pos = getPosition({refDataContainer: dataContainer, index});
 
       // if doesn't have point lat or lng, do not add the point
       // deck.gl can't handle position = null
       if (pos.every(Number.isFinite)) {
         data.push({
           index,
+          refDataContainer: dataContainer,
           sourcePosition: [pos[0], pos[1], pos[2]],
-          targetPosition: [pos[3], pos[4], pos[5]],
-          data: allData[index]
+          targetPosition: [pos[3], pos[4], pos[5]]
         });
       }
     }
@@ -160,16 +170,16 @@ export default class ArcLayer extends Layer {
   }
   /* eslint-enable complexity */
 
-  updateLayerMeta(allData) {
+  updateLayerMeta(dataContainer) {
     // get bounds from arcs
     const getPosition = this.getPositionAccessor();
 
-    const sBounds = this.getPointsBounds(allData, d => {
-      const pos = getPosition({data: d});
+    const sBounds = this.getPointsBounds(dataContainer, (d, i) => {
+      const pos = getPosition({refDataContainer: dataContainer, index: i});
       return [pos[0], pos[1]];
     });
-    const tBounds = this.getPointsBounds(allData, d => {
-      const pos = getPosition({data: d});
+    const tBounds = this.getPointsBounds(dataContainer, (d, i) => {
+      const pos = getPosition({refDataContainer: dataContainer, index: i});
       return [pos[3], pos[4]];
     });
 

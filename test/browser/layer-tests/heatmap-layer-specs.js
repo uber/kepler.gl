@@ -272,7 +272,7 @@ test('#Heatmaplayer -> formatLayerData -> w/o GpuFilter', t => {
         // test data
         t.equal(
           layerData.data.features.length,
-          testData.allData.length,
+          testData.dataContainer.numRows(),
           'should have same number of features'
         );
 

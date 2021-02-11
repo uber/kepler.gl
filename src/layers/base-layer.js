@@ -62,7 +62,8 @@ const MAX_SAMPLE_SIZE = 5000;
 const defaultDomain = [0, 1];
 const dataFilterExtension = new DataFilterExtension({filterSize: MAX_GPU_FILTERS});
 const identity = d => d;
-const defaultDataAccessor = d => d.data;
+
+const defaultDataAccessor = d => d.refDataContainer.row(d.index); // TODO materialized row
 
 export const OVERLAY_TYPE = keymirror({
   deckgl: null,
@@ -419,7 +420,7 @@ class Layer {
       return null;
     }
     // by default, each entry of layerData should have a data property points
-    // to the original item in the allData array
+    // to the original item in the dataContainer
     // each layer can implement its own getHoverData method
     return object.data;
   }
@@ -773,7 +774,7 @@ class Layer {
       }
 
       if (!attributeAccessors[accessor]) {
-        Console.warn(`Failed to provide accesso function for ${accessor || channel}`);
+        Console.warn(`Failed to provide accessor function for ${accessor || channel}`);
       }
     });
 
@@ -786,11 +787,14 @@ class Layer {
       .range(fixed ? domain : range);
   }
 
-  getPointsBounds(allData, getPosition = identity) {
+  getPointsBounds(dataContainer, getPosition = identity) {
     // no need to loop through the entire dataset
     // get a sample of data to calculate bounds
     const sampleData =
-      allData.length > MAX_SAMPLE_SIZE ? getSampleData(allData, MAX_SAMPLE_SIZE) : allData;
+      dataContainer.numRows() > MAX_SAMPLE_SIZE
+        ? getSampleData(dataContainer, MAX_SAMPLE_SIZE)
+        : dataContainer;
+
     const points = sampleData.map(getPosition);
 
     const latBounds = getLatLngBounds(points, 1, [-90, 90]);
@@ -865,14 +869,14 @@ class Layer {
       return {};
     }
     const layerDataset = datasets[this.config.dataId];
-    const {allData} = datasets[this.config.dataId];
+    const {dataContainer} = layerDataset;
 
     const getPosition = this.getPositionAccessor();
     const dataUpdateTriggers = this.getDataUpdateTriggers(layerDataset);
     const triggerChanged = this.getChangedTriggers(dataUpdateTriggers);
 
     if (triggerChanged.getMeta) {
-      this.updateLayerMeta(allData, getPosition);
+      this.updateLayerMeta(dataContainer, getPosition);
     }
 
     let data = [];
@@ -902,7 +906,7 @@ class Layer {
     Object.values(this.visualChannels).forEach(channel => {
       const {scale} = channel;
       const scaleType = this.config[scale];
-      // ordinal domain is based on allData, if only filter changed
+      // ordinal domain is based on dataContainer, if only filter changed
       // no need to update ordinal domain
       if (!newFilter || scaleType !== SCALE_TYPES.ordinal) {
         const {domain} = channel;
@@ -1130,12 +1134,12 @@ class Layer {
     }, []);
   }
 
-  calculateDataAttribute(dataset, getPosition) {
+  calculateDataAttribute(keplerTable, getPosition) {
     // implemented in subclasses
     return [];
   }
 
-  updateLayerMeta(allData, getPosition) {
+  updateLayerMeta(dataContainer, getPosition) {
     // implemented in subclasses
   }
 

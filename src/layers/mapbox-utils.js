@@ -131,14 +131,14 @@ function updateSourceData(map, sourceId, data) {
 }
 /**
  *
- * @param allData
+ * @param dataContainer DataContainer
  * @param filteredIndex
  * @param getGeometry {(point: any) => any}
  * @param getProperties {(point: any, index: number) => any}
  * @returns FeatureCollection
  */
 export function geoJsonFromData(
-  allData = [],
+  dataContainer,
   filteredIndex = [],
   getGeometry,
   getProperties = (d, i) => {}
@@ -151,7 +151,7 @@ export function geoJsonFromData(
 
   for (let i = 0; i < filteredIndex.length; i++) {
     const index = filteredIndex[i];
-    const point = allData[index];
+    const point = dataContainer.row(index);
     const geometry = getGeometry(point);
 
     if (geometry) {

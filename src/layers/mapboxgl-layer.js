@@ -99,7 +99,7 @@ class MapboxLayerGL extends Layer {
     return updateTriggers;
   }
 
-  calculateDataAttribute({allData, filteredIndex, gpuFilter}, getPosition) {
+  calculateDataAttribute({dataContainer, filteredIndex, gpuFilter}, getPosition) {
     const getGeometry = d => this.getGeometry(getPosition(d));
 
     const vcFields = Object.values(this.visualChannels)
@@ -141,7 +141,7 @@ class MapboxLayerGL extends Layer {
       ...getPropertyFromFilter(d, i)
     });
 
-    return geoJsonFromData(allData, filteredIndex, getGeometry, getProperties);
+    return geoJsonFromData(dataContainer, filteredIndex, getGeometry, getProperties);
   }
 
   // this layer is rendered at mapbox level

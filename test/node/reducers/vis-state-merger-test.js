@@ -38,6 +38,8 @@ import {receiveMapConfig, addDataToMap} from 'actions/actions';
 import {getDefaultInteraction} from 'utils/interaction-utils';
 import {processKeplerglJSON} from 'processors/data-processor';
 
+import {createDataContainer} from 'utils/table-utils';
+
 // fixtures
 import {
   savedStateV0,
@@ -1504,23 +1506,37 @@ test('VisStateMerger.v1 -> mergeFilters -> multiFilters', t => {
   );
   // check datasets is filtered
   // and field has filterProps
+
+  const tFields0 = testFields.map(f => ({
+    ...f,
+    ...(f.name === 'time'
+      ? {filterProps: timeFilterProps}
+      : f.name === 'date'
+      ? {filterProps: dateFilterProps}
+      : f.name === 'epoch'
+      ? {filterProps: epochFilterProps}
+      : {})
+  }));
+  const dc0 = createDataContainer(testAllData, {fields: tFields0});
+
+  const tFields1 = fields.map(f => ({
+    ...f,
+    ...(f.name === 'TRIPS'
+      ? {filterProps: geoJsonTripFilterProps}
+      : f.name === 'RATE'
+      ? {filterProps: geoJsonRateFilterProps}
+      : {})
+  }));
+  const dc1 = createDataContainer(testGeoJsonAllData, {fields: tFields1});
+
   const expectedDatasets = {
     [testCsvDataId]: {
       metadata: {
         id: testCsvDataId,
         label: 'hello.csv'
       },
-      fields: testFields.map(f => ({
-        ...f,
-        ...(f.name === 'time'
-          ? {filterProps: timeFilterProps}
-          : f.name === 'date'
-          ? {filterProps: dateFilterProps}
-          : f.name === 'epoch'
-          ? {filterProps: epochFilterProps}
-          : {})
-      })),
-      allData: testAllData,
+      fields: tFields0,
+      dataContainer: dc0,
       allIndexes: [
         0,
         1,
@@ -1575,7 +1591,7 @@ test('VisStateMerger.v1 -> mergeFilters -> multiFilters', t => {
         filterValueAccessor: {
           inputs: [
             {
-              data: testAllData[1],
+              refDataContainer: dc0,
               index: 1
             }
           ],
@@ -1594,14 +1610,7 @@ test('VisStateMerger.v1 -> mergeFilters -> multiFilters', t => {
         id: testGeoJsonDataId,
         label: 'zip.geojson'
       },
-      fields: fields.map(f => ({
-        ...f,
-        ...(f.name === 'TRIPS'
-          ? {filterProps: geoJsonTripFilterProps}
-          : f.name === 'RATE'
-          ? {filterProps: geoJsonRateFilterProps}
-          : {})
-      })),
+      fields: tFields1,
       filterRecord: {
         dynamicDomain: [mergedRateFilter, mergedTripFilter],
         fixedDomain: [],
@@ -1624,14 +1633,14 @@ test('VisStateMerger.v1 -> mergeFilters -> multiFilters', t => {
         filterValueAccessor: {
           inputs: [
             {
-              data: testGeoJsonAllData[1],
+              refDataContainer: dc1,
               index: 1
             }
           ],
           result: [0, 0, 0, 0]
         }
       },
-      allData: testGeoJsonAllData,
+      dataContainer: dc1,
       allIndexes: [0, 1, 2, 3, 4],
       id: testGeoJsonDataId,
       label: 'zip.geojson',

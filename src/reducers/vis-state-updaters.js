@@ -1965,7 +1965,9 @@ export function copyTableColumnUpdater(state, {dataId, column}) {
     return state;
   }
   const {type} = dataset.fields[fieldIdx];
-  const text = dataset.allData.map(d => parseFieldValue(d[fieldIdx], type)).join('\n');
+  const text = dataset.dataContainer
+    .map(row => parseFieldValue(row.valueAt(fieldIdx), type), true)
+    .join('\n');
 
   copy(text);
 

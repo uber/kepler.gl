@@ -148,10 +148,10 @@ test('interactionUtil -> getTooltipDisplayDeltaValue', t => {
   const TEST_CASES = [
     {
       input: {
-        primaryData: dataset.allData[0],
+        primaryData: dataset.dataContainer.row(0),
         field: dataset.fields[testFieldIdx],
         compareType: COMPARE_TYPES.ABSOLUTE,
-        data: dataset.allData[1],
+        data: dataset.dataContainer.row(1),
         fieldIdx: testFieldIdx,
         item
       },
@@ -160,10 +160,10 @@ test('interactionUtil -> getTooltipDisplayDeltaValue', t => {
     },
     {
       input: {
-        primaryData: dataset.allData[0],
+        primaryData: dataset.dataContainer.row(0),
         field: dataset.fields[testFieldIdx],
         compareType: COMPARE_TYPES.RELATIVE,
-        data: dataset.allData[1],
+        data: dataset.dataContainer.row(1),
         fieldIdx: testFieldIdx,
         item
       },
@@ -172,10 +172,10 @@ test('interactionUtil -> getTooltipDisplayDeltaValue', t => {
     },
     {
       input: {
-        primaryData: dataset.allData[3],
+        primaryData: dataset.dataContainer.row(3),
         field: dataset.fields[testFieldIdx],
         compareType: COMPARE_TYPES.ABSOLUTE,
-        data: dataset.allData[1],
+        data: dataset.dataContainer.row(1),
         fieldIdx: testFieldIdx,
         item
       },
@@ -184,10 +184,10 @@ test('interactionUtil -> getTooltipDisplayDeltaValue', t => {
     },
     {
       input: {
-        primaryData: dataset.allData[0],
+        primaryData: dataset.dataContainer.row(0),
         field: dataset.fields[testFieldIdx],
         compareType: COMPARE_TYPES.ABSOLUTE,
-        data: dataset.allData[3],
+        data: dataset.dataContainer.row(3),
         fieldIdx: testFieldIdx,
         item
       },
@@ -196,10 +196,10 @@ test('interactionUtil -> getTooltipDisplayDeltaValue', t => {
     },
     {
       input: {
-        primaryData: dataset.allData[4],
+        primaryData: dataset.dataContainer.row(4),
         field: dataset.fields[testFieldIdx],
         compareType: COMPARE_TYPES.ABSOLUTE,
-        data: dataset.allData[3],
+        data: dataset.dataContainer.row(3),
         fieldIdx: testFieldIdx,
         item
       },
@@ -243,7 +243,7 @@ test('interactionUtil -> getTooltipDisplayValue', t => {
     const fieldIdx = dataset.fields.findIndex(f => f.name === tc.input.name);
 
     t.deepEqual(
-      dataset.allData.map(data =>
+      dataset.dataContainer.map(data =>
         getTooltipDisplayValue({
           field,
           data,

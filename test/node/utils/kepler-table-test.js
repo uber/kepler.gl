@@ -119,7 +119,7 @@ function testGetNumericFieldStep(table, t) {
   );
 }
 
-function testGetFilterFunction({fields, allData}, t) {
+function testGetFilterFunction({fields, dataContainer}, t) {
   const dataId = 'dataset-1';
   const timeStringFilter = {
     fieldIdx: [0],
@@ -136,9 +136,17 @@ function testGetFilterFunction({fields, allData}, t) {
 
   let filterFunction = getFilterFunction(field, dataId, timeStringFilter, []);
 
-  t.equal(filterFunction(allData[10], 10), true, `${allData[10][0]} should be inside the range`);
+  t.equal(
+    filterFunction(dataContainer.row(10), 10),
+    true,
+    `${dataContainer.valueAt(10, 0)} should be inside the range`
+  );
 
-  t.equal(filterFunction(allData[15], 15), false, `${allData[15][0]} should be outside the range`);
+  t.equal(
+    filterFunction(dataContainer.row(15), 15),
+    false,
+    `${dataContainer.valueAt(15, 0)} should be outside the range`
+  );
 
   const epochFilter = {
     fieldIdx: [4],
@@ -152,9 +160,17 @@ function testGetFilterFunction({fields, allData}, t) {
 
   filterFunction = getFilterFunction(field, dataId, epochFilter, []);
 
-  t.equal(filterFunction(allData[10], 10), true, `${allData[10][1]} should be inside the range`);
+  t.equal(
+    filterFunction(dataContainer.row(10), 10),
+    true,
+    `${dataContainer.valueAt(10, 1)} should be inside the range`
+  );
 
-  t.equal(filterFunction(allData[15], 15), false, `${allData[15][1]} should be outside the range`);
+  t.equal(
+    filterFunction(dataContainer.row(15), 15),
+    false,
+    `${dataContainer.valueAt(15, 1)} should be outside the range`
+  );
 
   const tzFilter = {
     fieldIdx: [7],
@@ -171,9 +187,17 @@ function testGetFilterFunction({fields, allData}, t) {
 
   filterFunction = getFilterFunction(field, dataId, tzFilter, []);
 
-  t.equal(filterFunction(allData[10], 10), true, `${allData[10][7]} should be inside the range`);
+  t.equal(
+    filterFunction(dataContainer.row(10), 10),
+    true,
+    `${dataContainer.valueAt(10, 7)} should be inside the range`
+  );
 
-  t.equal(filterFunction(allData[23], 10), false, `${allData[23][7]} should be outside the range`);
+  t.equal(
+    filterFunction(dataContainer.row(23), 10),
+    false,
+    `${dataContainer.valueAt(23, 7)} should be outside the range`
+  );
 
   const utcFilter = {
     fieldIdx: [8],
@@ -190,11 +214,23 @@ function testGetFilterFunction({fields, allData}, t) {
 
   filterFunction = getFilterFunction(field, dataId, utcFilter, []);
 
-  t.equal(filterFunction(allData[6], 6), false, `${allData[0][8]} should be outside the range`);
+  t.equal(
+    filterFunction(dataContainer.row(6), 6),
+    false,
+    `${dataContainer.valueAt(0, 8)} should be outside the range`
+  );
 
-  t.equal(filterFunction(allData[4], 4), true, `${allData[4][8]} should be inside the range`);
+  t.equal(
+    filterFunction(dataContainer.row(4), 4),
+    true,
+    `${dataContainer.valueAt(4, 8)} should be inside the range`
+  );
 
-  t.equal(filterFunction(allData[23], 23), false, `${allData[23][8]} should be outside the range`);
+  t.equal(
+    filterFunction(dataContainer.row(23), 23),
+    false,
+    `${dataContainer.valueAt(23, 8)} should be outside the range`
+  );
 }
 
 test('KeplerTable -> getColumnFilterDomain -> time', t => {

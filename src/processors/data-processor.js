@@ -29,6 +29,7 @@ import {notNullorUndefined, parseFieldValue} from 'utils/data-utils';
 import KeplerGlSchema from 'schemas';
 import {GUIDES_FILE_FORMAT_DOC} from 'constants/user-guides';
 import {isPlainObject, toArray} from 'utils/utils';
+import {createDataContainer} from 'utils/table-utils';
 
 export const ACCEPTED_ANALYZER_TYPES = [
   AnalyzerDATA_TYPES.DATE,
@@ -138,7 +139,10 @@ export function processCsvData(rawData, header) {
   cleanUpFalsyCsvValue(rows);
   // No need to run type detection on every data point
   // here we get a list of none null values to run analyze on
-  const sample = getSampleForTypeAnalyze({fields: headerRow, allData: rows});
+
+  // ! temp data container, as sampling expects data container
+  const tempDataContainer = createDataContainer(rows, {fields: headerRow});
+  const sample = getSampleForTypeAnalyze({fields: headerRow, dataContainer: tempDataContainer});
   const fields = getFieldsFromData(sample, headerRow);
   const parsedRows = parseRowsByFields(rows, fields);
 
@@ -162,8 +166,8 @@ export function parseRowsByFields(rows, fields) {
  *
  * @type {typeof import('./data-processor').getSampleForTypeAnalyze}
  */
-export function getSampleForTypeAnalyze({fields, allData, sampleCount = 50}) {
-  const total = Math.min(sampleCount, allData.length);
+export function getSampleForTypeAnalyze({fields, dataContainer, sampleCount = 50}) {
+  const total = Math.min(sampleCount, dataContainer.numRows());
   // const fieldOrder = fields.map(f => f.name);
   const sample = range(0, total, 1).map(d => ({}));
 
@@ -175,12 +179,12 @@ export function getSampleForTypeAnalyze({fields, allData, sampleCount = 50}) {
     let j = 0;
 
     while (j < total) {
-      if (i >= allData.length) {
+      if (i >= dataContainer.numRows()) {
         // if depleted data pool
         sample[j][field] = null;
         j++;
-      } else if (notNullorUndefined(allData[i][fieldIdx])) {
-        sample[j][field] = allData[i][fieldIdx];
+      } else if (notNullorUndefined(dataContainer.valueAt(i, fieldIdx))) {
+        sample[j][field] = dataContainer.valueAt(i, fieldIdx);
         j++;
         i++;
       } else {
@@ -309,7 +313,7 @@ export function getFieldsFromData(data, fieldOrder) {
       fieldIdx: index,
       type: analyzerTypeToFieldType(type),
       analyzerType: type,
-      valueAccessor: values => values[index]
+      valueAccessor: values => values.valueAt(index)
     };
   });
 
@@ -530,18 +534,18 @@ export function processGeojson(rawData) {
 
 /**
  * On export data to csv
- * @param {Array<Array>} data `dataset.allData` or filtered data `dataset.data`
+ * @param {import('utils/table-utils/data-container-interface').DataContainerInterface} dataContainer // ! `dataset.allData` or filtered data `dataset.data`
  * @param {Array<Object>} fields `dataset.fields`
  * @returns {string} csv string
  */
-export function formatCsv(data, fields) {
+export function formatCsv(dataContainer, fields) {
   const columns = fields.map(f => f.name);
   const formattedData = [columns];
 
   // parse geojson object as string
-  data.forEach(row => {
+  for (const row of dataContainer.rows(true)) {
     formattedData.push(row.map((d, i) => parseFieldValue(d, fields[i].type)));
-  });
+  }
 
   return csvFormatRows(formattedData);
 }
@@ -557,12 +561,15 @@ export function validateInputData(data) {
   } else if (!Array.isArray(data.fields)) {
     assert('addDataToMap Error: expect dataset.data.fields to be an array');
     return null;
-  } else if (!Array.isArray(data.rows)) {
-    assert('addDataToMap Error: expect dataset.data.rows to be an array');
+  } else if (!Array.isArray(data.rows) && !data.dataContainer) {
+    // ! TODO expect only data container
+    assert(
+      'addDataToMap Error: expect dataset.data.rows to be an array or dataContainer should be present'
+    );
     return null;
   }
 
-  const {fields, rows} = data;
+  const {fields, rows, dataContainer} = data;
 
   // check if all fields has name, format and type
   const allValid = fields.every((f, i) => {
@@ -589,6 +596,14 @@ export function validateInputData(data) {
 
     // check time format is correct based on first 10 not empty element
     if (f.type === ALL_FIELD_TYPES.timestamp) {
+      if (dataContainer) {
+        const sample = findNonEmptyRowsAtFieldDC(dataContainer, i, 10).map(row => ({
+          ts: row.valueAt(i)
+        }));
+        const analyzedType = Analyzer.computeColMeta(sample)[0];
+        return analyzedType && analyzedType.category === 'TIME' && analyzedType.format === f.format;
+      }
+
       const sample = findNonEmptyRowsAtField(rows, i, 10).map(r => ({ts: r[i]}));
       const analyzedType = Analyzer.computeColMeta(sample)[0];
       return analyzedType && analyzedType.category === 'TIME' && analyzedType.format === f.format;
@@ -598,14 +613,22 @@ export function validateInputData(data) {
   });
 
   if (allValid) {
-    return {rows, fields};
+    // @ts-ignore
+    return {fields, rows, dataContainer}; // TODO some tests already expect data container
+  }
+
+  let outDataContainer;
+  if (rows) {
+    outDataContainer = createDataContainer(rows, {fields: fields.map(f => f.name)});
+  } else {
+    outDataContainer = dataContainer;
   }
 
   // if any field has missing type, recalculate it for everyone
   // because we simply lost faith in humanity
   const sampleData = getSampleForTypeAnalyze({
     fields: fields.map(f => f.name),
-    allData: rows
+    dataContainer: outDataContainer
   });
   const fieldOrder = fields.map(f => f.name);
   const meta = getFieldsFromData(sampleData, fieldOrder);
@@ -616,7 +639,7 @@ export function validateInputData(data) {
     analyzerType: meta[i].analyzerType
   }));
 
-  return {fields: updatedFields, rows};
+  return {fields: updatedFields, rows /*, dataContainer: outDataContainer*/}; // ! TODO dataContainer: outDataContainer, proxy look in create table
 }
 
 function findNonEmptyRowsAtField(rows, fieldIdx, total) {
@@ -630,6 +653,19 @@ function findNonEmptyRowsAtField(rows, fieldIdx, total) {
   }
   return sample;
 }
+
+function findNonEmptyRowsAtFieldDC(dataContainer, fieldIdx, total) {
+  const sample = [];
+  let i = 0;
+  while (sample.length < total && i < dataContainer.numRows()) {
+    if (notNullorUndefined(dataContainer.valueAt(i, fieldIdx))) {
+      sample.push(dataContainer.row(i));
+    }
+    i++;
+  }
+  return sample;
+}
+
 /**
  * Process saved kepler.gl json to be pass to [`addDataToMap`](../actions/actions.md#adddatatomap).
  * The json object should contain `datasets` and `config`.

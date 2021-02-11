@@ -33,6 +33,8 @@ import {formatCsv} from 'processors/data-processor';
 import get from 'lodash.get';
 import {set, generateHashId} from 'utils/utils';
 
+import {createMaskedDataContainer} from './table-utils/data-container-utils';
+
 /**
  * Default file names
  */
@@ -202,8 +204,11 @@ export function exportData(state, option) {
   }
 
   selectedDatasets.forEach(selectedData => {
-    const {allData, fields, label, filteredIdxCPU = []} = selectedData;
-    const toExport = filtered ? filteredIdxCPU.map(i => allData[i]) : allData;
+    const {dataContainer, fields, label, filteredIdxCPU = []} = selectedData;
+    const toExport = filtered
+      ? createMaskedDataContainer(dataContainer, filteredIdxCPU)
+      : dataContainer;
+
     // start to export data according to selected data type
     switch (dataType) {
       case EXPORT_DATA_TYPE.CSV: {

@@ -133,7 +133,7 @@ test('#IconLayer -> formatLayerData', t => {
         const expectedLayerData = {
           data: [
             {
-              data: testRows[0],
+              refDataContainer: preparedDataset.dataContainer,
               index: 0,
               icon: 'accel'
             }

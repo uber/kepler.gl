@@ -24,6 +24,7 @@ import {console as globalConsole} from 'global/window';
 import {VERSIONS} from './versions';
 import Schema from './schema';
 import {getFieldsFromData, getSampleForTypeAnalyze} from 'processors/data-processor';
+import {createDataContainer} from 'utils/table-utils';
 
 // version v0
 const fieldPropertiesV0 = {
@@ -63,6 +64,7 @@ const propertiesV0 = {
 
 const propertiesV1 = {
   ...propertiesV0,
+  dataContainer: null, // TODO new properties version
   fields: new FieldSchema({
     key: 'fields',
     version: VERSIONS.v1,
@@ -77,7 +79,8 @@ class DatasetSchema extends Schema {
     return this.savePropertiesOrApplySchema(dataset)[this.key];
   }
   load(dataset) {
-    const {fields, allData} = dataset;
+    const {fields} = dataset;
+    let {dataContainer} = dataset;
     let updatedFields = fields;
 
     // recalculate field type
@@ -87,10 +90,15 @@ class DatasetSchema extends Schema {
       fields[0] &&
       (!fields[0].hasOwnProperty('format') || !fields[0].hasOwnProperty('analyzerType'));
 
+    // TODO new properties version
+    if (!dataContainer) {
+      dataContainer = createDataContainer(dataset.allData, {fields});
+    }
+
     if (needCalculateMeta) {
       const fieldOrder = fields.map(f => f.name);
 
-      const sampleData = getSampleForTypeAnalyze({fields: fieldOrder, allData});
+      const sampleData = getSampleForTypeAnalyze({fields: fieldOrder, dataContainer});
       const meta = getFieldsFromData(sampleData, fieldOrder);
 
       updatedFields = meta.map((f, i) => ({
@@ -109,7 +117,7 @@ class DatasetSchema extends Schema {
 
     // get format of all fields
     return {
-      data: {fields: updatedFields, rows: dataset.allData},
+      data: {fields: updatedFields, dataContainer},
       info: pick(dataset, ['id', 'label', 'color'])
     };
   }

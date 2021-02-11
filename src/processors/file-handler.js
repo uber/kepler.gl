@@ -172,6 +172,7 @@ export function processFileData({content, fileCache}) {
       resolve([
         ...fileCache,
         {
+          // TODO {rows, fields} here
           data: result,
           info: {
             label: content.fileName,
@@ -202,6 +203,7 @@ export function filesToDataPayload(fileCache) {
       } else if (DATASET_FORMATS[format]) {
         // if file contains only data
         const newDataset = {
+          // TODO {rows, fields} here
           data,
           info: {
             id: info.id || generateHashId(4),

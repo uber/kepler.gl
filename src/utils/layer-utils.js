@@ -47,7 +47,9 @@ export function findDefaultLayer(dataset, layerClasses) {
   // go through all layerProps to create layer
   return layerProps.map(props => {
     const layer = new layerClasses[props.type](props);
-    return typeof layer.setInitialLayerConfig === 'function' && Array.isArray(dataset.allData)
+    return typeof layer.setInitialLayerConfig === 'function' &&
+      dataset.dataContainer &&
+      dataset.dataContainer.numRows // TODO is data container
       ? layer.setInitialLayerConfig(dataset)
       : layer;
   });
@@ -95,8 +97,8 @@ export function getLayerHoverProp({
       if (!dataId) {
         return null;
       }
-      const {allData, fields} = datasets[dataId];
-      const data = layer.getHoverData(object, allData, fields);
+      const {dataContainer, fields} = datasets[dataId];
+      const data = layer.getHoverData(object, dataContainer, fields);
       const fieldsToShow = interactionConfig.tooltip.config.fieldsToShow[dataId];
 
       return {

@@ -55,6 +55,8 @@ import {
   validateInputData
 } from 'processors/data-processor';
 
+import {createDataContainer} from 'utils/table-utils';
+
 import {ALL_FIELD_TYPES} from 'constants/default-settings';
 import {cmpFields} from '../../helpers/comparison-utils';
 
@@ -408,7 +410,7 @@ test('Processor -> parseCsvRowsByFieldType -> boolean', t => {
 test('Processor -> getSampleForTypeAnalyze', t => {
   const fields = ['string', 'int', 'bool', 'time'];
 
-  const allData = [
+  const rowsData = [
     ['a', 0, true, null],
     ['b', 2, false, null],
     ['c', 3, true, '2017-01-01'],
@@ -420,7 +422,9 @@ test('Processor -> getSampleForTypeAnalyze', t => {
     ['h', undefined, true, '2017-01-04']
   ];
 
-  const sample = getSampleForTypeAnalyze({fields, allData, sampleCount: 5});
+  const dataContainer = createDataContainer(rowsData, {fields});
+
+  const sample = getSampleForTypeAnalyze({fields, dataContainer, sampleCount: 5});
   const expected = [
     {
       string: 'a',
@@ -645,9 +649,10 @@ test('Processor -> formatCsv', t => {
   ];
 
   cases.forEach(({input, expected, msg, processor}) => {
-    const {fields, rows} = processor(input);
+    const proc = processor(input);
+    const dataContainer = createDataContainer(proc.rows, {fields: proc.fields});
 
-    t.deepEqual(formatCsv(rows, fields), expected, msg);
+    t.deepEqual(formatCsv(dataContainer, proc.fields), expected, msg);
   });
   t.end();
 });

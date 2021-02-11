@@ -63,18 +63,17 @@ export function containValidTime(timestamps) {
 
 /**
  * Check if geojson features are trip layer animatable by meeting 3 conditions
- * @param {array} allData array of geojson feature objects
+ * @param {import('utils/table-utils/data-container-interface').DataContainerInterface} dataContainer geojson feature objects container
  * @param {object} field array of geojson feature objects
  * @returns {boolean} whether it is trip layer animatable
  */
-export function isTripGeoJsonField(allData = [], field) {
-  if (!allData.length) {
-    return false;
-  }
+export function isTripGeoJsonField(dataContainer, field) {
   const getValue = d => field.valueAccessor(d);
   const maxCount = 10000;
   const sampleRawFeatures =
-    allData.length > maxCount ? getSampleData(allData, maxCount, getValue) : allData.map(getValue);
+    dataContainer.numRows() > maxCount
+      ? getSampleData(dataContainer, maxCount, getValue)
+      : dataContainer.map(getValue);
 
   const features = sampleRawFeatures.map(parseGeoJsonRawFeature).filter(f => f);
   const featureTypes = getGeojsonFeatureTypes(features);

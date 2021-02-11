@@ -27,12 +27,22 @@ import HeatmapLayerIcon from './heatmap-layer-icon';
 
 export const MAX_ZOOM_LEVEL = 18;
 
-export const pointPosAccessor = ({lat, lng}) => d => [
-  // lng
-  d[lng.fieldIdx],
-  // lat
-  d[lat.fieldIdx]
-];
+export const pointPosAccessor = ({lat, lng}) => d => {
+  if (d.refDataContainer) {
+    return [
+      d.refDataContainer.valueAt(d.index, lng.fieldIdx),
+      d.refDataContainer.valueAt(d.index, lat.fieldIdx)
+    ];
+  }
+
+  // ! Again called on rows
+  return [
+    // lng
+    d.valueAt(lng.fieldIdx),
+    // lat
+    d.valueAt(lat.fieldIdx)
+  ];
+};
 
 export const pointColResolver = ({lat, lng}) => `${lat.fieldIdx}-${lng.fieldIdx}`;
 
@@ -139,9 +149,11 @@ class HeatmapLayer extends MapboxGLLayer {
     return this.getPosition(this.config.columns);
   }
 
-  updateLayerMeta(allData) {
+  updateLayerMeta(dataContainer) {
     const getPosition = this.getPositionAccessor();
-    const bounds = this.getPointsBounds(allData, d => getPosition(d));
+    const bounds = this.getPointsBounds(dataContainer, (d, i) =>
+      getPosition({refDataContainer: dataContainer, index: i})
+    );
     this.updateMeta({bounds});
   }
 

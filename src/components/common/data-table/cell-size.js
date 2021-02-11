@@ -24,11 +24,11 @@ import {parseFieldValue} from 'utils/data-utils';
 const MIN_GHOST_CELL_SIZE = 200;
 
 /**
- * Measure rows and column content to determin min width for each column
+ * Measure rows and column content to determine min width for each column
  * @param {*} param0
  */
 export function renderedSize({
-  text: {rows, column},
+  text: {dataContainer, column},
   type = 'string',
   colIdx,
   numRowsToCalculate = 10,
@@ -50,19 +50,21 @@ export function renderedSize({
   document.body.appendChild(textCanvas);
   const context = textCanvas.getContext('2d');
   context.font = [fontSize, font].join('px ');
+
   let rowsToSample = [...Array(numRowsToCalculate)].map(() =>
-    Math.floor(Math.random() * (rows.length - 1))
+    Math.floor(Math.random() * (dataContainer.numRows() - 1))
   );
 
   // IF we have less than 10 rows, lets measure all of them
-  if (rows.length <= numRowsToCalculate) {
-    rowsToSample = Array.from(Array(rows.length).keys());
+  if (dataContainer.numRows() <= numRowsToCalculate) {
+    rowsToSample = Array.from(Array(dataContainer.numRows()).keys());
   }
   const rowWidth = Math.max(
     ...rowsToSample.map(
       rowIdx =>
-        Math.ceil(context.measureText(parseFieldValue(rows[rowIdx][colIdx], type)).width) +
-        cellPadding
+        Math.ceil(
+          context.measureText(parseFieldValue(dataContainer.valueAt(rowIdx, colIdx), type)).width
+        ) + cellPadding
     )
   );
   // header cell only has left padding

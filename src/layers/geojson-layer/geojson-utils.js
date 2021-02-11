@@ -22,7 +22,7 @@ import wktParser from 'wellknown';
 import normalize from '@mapbox/geojson-normalize';
 import bbox from '@turf/bbox';
 
-import {getSampleData} from 'utils/data-utils';
+import {getSampleDataArray} from 'utils/data-utils';
 
 export function parseGeoJsonRawFeature(rawFeature) {
   if (typeof rawFeature === 'object') {
@@ -53,11 +53,11 @@ export function parseGeoJsonRawFeature(rawFeature) {
 }
 /**
  * Parse raw data to GeoJson feature
- * @param allData
+ * @param dataContainer
  * @param getFeature
  * @returns {{}}
  */
-export function getGeojsonDataMaps(allData, getFeature) {
+export function getGeojsonDataMaps(dataContainer, getFeature) {
   const acceptableTypes = [
     'Point',
     'MultiPoint',
@@ -70,8 +70,8 @@ export function getGeojsonDataMaps(allData, getFeature) {
 
   const dataToFeature = [];
 
-  for (let index = 0; index < allData.length; index++) {
-    const feature = parseGeoJsonRawFeature(getFeature(allData[index]));
+  for (let index = 0; index < dataContainer.numRows(); index++) {
+    const feature = parseGeoJsonRawFeature(getFeature(dataContainer.row(index)));
 
     if (feature && feature.geometry && acceptableTypes.includes(feature.geometry.type)) {
       // store index of the data in feature properties
@@ -132,7 +132,8 @@ export function getGeojsonBounds(features = []) {
   // 70 ms for 10,000 polygons
   // here we only pick couple
   const maxCount = 10000;
-  const samples = features.length > maxCount ? getSampleData(features, maxCount) : features;
+
+  const samples = features.length > maxCount ? getSampleDataArray(features, maxCount) : features;
 
   const nonEmpty = samples.filter(
     d => d && d.geometry && d.geometry.coordinates && d.geometry.coordinates.length

@@ -109,7 +109,7 @@ test('#file-handler -> filesToDataPayload', t => {
     {
       data: {
         fields: parsedFields,
-        rows: parsedRows
+        rows: parsedRows // TODO looks like not checked
       },
       info: {label: 'rows-data.json', format: 'row'}
     },
@@ -119,7 +119,7 @@ test('#file-handler -> filesToDataPayload', t => {
           {
             data: {
               fields: parsedKeplerMapFields,
-              rows: keplerglMap.datasets[0].data.allData
+              rows: keplerglMap.datasets[0].data.allData // TODO looks like not checked
             },
             info: {id: 'a5ybmwl2d', label: 'geojson_as_string_small.csv', color: [53, 92, 125]}
           }

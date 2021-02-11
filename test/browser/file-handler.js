@@ -513,7 +513,7 @@ test('#file-handler -> readFileInBatches.keplerMap -> processFileData', async t 
   t.deepEqual(
     Object.keys(batch1.value).sort(),
     Object.keys(expected1.value).sort(),
-    'value should have same keyss'
+    'value should have same keys'
   );
 
   t.equal(batch1.value.batchType, expected1.value.batchType, 'batch1.batchType should be the same');
@@ -620,12 +620,12 @@ test('#file-handler -> readFileInBatches.keplerMap -> processFileData', async t 
   );
   t.deepEqual(
     Object.keys(processed[0].data.datasets[0].data),
-    ['fields', 'rows'],
+    ['fields', 'dataContainer'],
     'dataset should have fields and rows'
   );
 
   t.deepEqual(
-    processed[0].data.datasets[0].data.rows,
+    processed[0].data.datasets[0].data.dataContainer.flattenData(),
     expectedFileCache[0].data.datasets[0].data.rows,
     'should load datasets rows'
   );

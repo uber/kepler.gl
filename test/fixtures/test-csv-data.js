@@ -459,7 +459,7 @@ export const testFields = [
     name: 'gps_data.utc_timestamp',
     format: 'YYYY-M-D H:m:s',
     analyzerType: 'DATETIME',
-    valueAccessor: values => values[0]
+    valueAccessor: values => values.valueAt(0)
   },
   {
     type: 'real',
@@ -467,7 +467,7 @@ export const testFields = [
     name: 'gps_data.lat',
     format: '',
     analyzerType: 'FLOAT',
-    valueAccessor: values => values[1]
+    valueAccessor: values => values.valueAt(1)
   },
   {
     type: 'real',
@@ -475,7 +475,7 @@ export const testFields = [
     name: 'gps_data.lng',
     format: '',
     analyzerType: 'FLOAT',
-    valueAccessor: values => values[2]
+    valueAccessor: values => values.valueAt(2)
   },
   {
     type: 'string',
@@ -483,7 +483,7 @@ export const testFields = [
     name: 'gps_data.types',
     format: '',
     analyzerType: 'STRING',
-    valueAccessor: values => values[3]
+    valueAccessor: values => values.valueAt(3)
   },
   {
     type: 'timestamp',
@@ -491,7 +491,7 @@ export const testFields = [
     name: 'epoch',
     format: 'X',
     analyzerType: 'TIME',
-    valueAccessor: values => values[4]
+    valueAccessor: values => values.valueAt(4)
   },
   {
     type: 'boolean',
@@ -499,7 +499,7 @@ export const testFields = [
     name: 'has_result',
     format: '',
     analyzerType: 'BOOLEAN',
-    valueAccessor: values => values[5]
+    valueAccessor: values => values.valueAt(5)
   },
   {
     type: 'integer',
@@ -507,7 +507,7 @@ export const testFields = [
     name: 'id',
     format: '',
     analyzerType: 'INT',
-    valueAccessor: values => values[6]
+    valueAccessor: values => values.valueAt(6)
   },
   {
     type: 'timestamp',
@@ -515,7 +515,7 @@ export const testFields = [
     name: 'time',
     format: 'YYYY-M-DTHH:mm:ss.SSSS',
     analyzerType: 'DATETIME',
-    valueAccessor: values => values[7]
+    valueAccessor: values => values.valueAt(7)
   },
   {
     type: 'timestamp',
@@ -523,7 +523,7 @@ export const testFields = [
     name: 'begintrip_ts_utc',
     format: 'YYYY-M-D HH:mm:ssZZ',
     analyzerType: 'DATETIME',
-    valueAccessor: values => values[8]
+    valueAccessor: values => values.valueAt(8)
   },
   {
     type: 'timestamp',
@@ -531,7 +531,7 @@ export const testFields = [
     name: 'begintrip_ts_local',
     format: 'YYYY-M-D HH:mm:ssZZ',
     analyzerType: 'DATETIME',
-    valueAccessor: values => values[9]
+    valueAccessor: values => values.valueAt(9)
   },
   {
     type: 'date',
@@ -539,7 +539,7 @@ export const testFields = [
     name: 'date',
     format: 'YYYY-M-D',
     analyzerType: 'DATE',
-    valueAccessor: values => values[10]
+    valueAccessor: values => values.valueAt(10)
   }
 ];
 

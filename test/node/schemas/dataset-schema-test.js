@@ -33,6 +33,8 @@ import {
 import {savedStateV1, v0ExpectedInfo, v0ExpectedFields} from 'test/fixtures/state-saved-v1-1';
 import {stateSavedV1_2, v1expectedInfo_2, v1expectedFields_2} from 'test/fixtures/state-saved-v1-2';
 
+import {createDataContainer} from 'utils/table-utils';
+
 /* eslint-disable max-statements */
 test('#DatasetSchema -> SchemaManager.parseSavedData', t => {
   const dataSaved = cloneDeep(savedStateV0).datasets;
@@ -58,16 +60,36 @@ test('#DatasetSchema -> SchemaManager.parseSavedData', t => {
     }
   };
 
+  const exp0 = {...expectedDataset0}; // TODO don't overwrite existing datasets
+  exp0.data.dataContainer = createDataContainer(expectedDataset0.data.rows, {
+    fields: expectedDataset0.data.fields
+  });
+  delete exp0.data.rows;
+
   t.equal(parsedValid.length, 2, 'should have 2 datasets');
-  t.deepEqual(parsedValid[0], expectedDataset0, 'should parse dataset correctly');
+  t.deepEqual(parsedValid[0], exp0, 'should parse dataset correctly');
   t.deepEqual(parsedValid[0].info, expectedInfo0, 'should parse info correctly');
   t.deepEqual(parsedValid[0].data.fields, expectedFields0, 'should parse fields correctly');
-  t.deepEqual(parsedValid[0].data.rows, expectedRows0, 'should parse rows correctly');
+  t.deepEqual(
+    parsedValid[0].data.dataContainer.flattenData(),
+    expectedRows0,
+    'should parse rows correctly'
+  );
 
-  t.deepEqual(parsedValid[1], expectedDataset1, 'should parse dataset correctly');
+  const exp1 = {...expectedDataset1};
+  exp1.data.dataContainer = createDataContainer(expectedDataset1.data.rows, {
+    fields: expectedDataset1.data.fields
+  });
+  delete exp1.data.rows;
+
+  t.deepEqual(parsedValid[1], exp1, 'should parse dataset correctly');
   t.deepEqual(parsedValid[1].info, expectedInfo1, 'should parse info correctly');
   t.deepEqual(parsedValid[1].data.fields, expectedFields1, 'should parse fields correctly');
-  t.deepEqual(parsedValid[1].data.rows, expectedRows1, 'should parse rows correctly');
+  t.deepEqual(
+    parsedValid[1].data.dataContainer.flattenData(),
+    expectedRows1,
+    'should parse rows correctly'
+  );
 
   t.end();
 });
@@ -89,10 +111,20 @@ test('#DatasetSchema -> SchemaManager.parseSavedData.v1', t => {
 
   t.equal(parsedValid.length, 1, 'should have 1 dataset');
 
-  t.deepEqual(parsedValid[0], expectedDataset, 'should parse dataset correctly');
+  const exp0 = {...expectedDataset};
+  exp0.data.dataContainer = createDataContainer(expectedDataset.data.rows, {
+    fields: expectedDataset.data.fields
+  });
+  delete exp0.data.rows;
+
+  t.deepEqual(parsedValid[0], exp0, 'should parse dataset correctly');
   t.deepEqual(parsedValid[0].info, v0ExpectedInfo, 'should parse info correctly');
   t.deepEqual(parsedValid[0].data.fields, v0ExpectedFields, 'should parse fields correctly');
-  t.deepEqual(parsedValid[0].data.rows, expectedRows, 'should parse rows correctly');
+  t.deepEqual(
+    parsedValid[0].data.dataContainer.flattenData(),
+    expectedRows,
+    'should parse rows correctly'
+  );
 
   t.end();
 });
@@ -112,7 +144,13 @@ test('#DatasetSchema -> SchemaManager.parseSavedData.v1 with ts', t => {
 
   t.equal(parsedValid.length, 1, 'should have 1 dataset');
 
-  t.deepEqual(parsedValid[0], expectedDataset, 'should parse dataset correctly');
+  const exp0 = {...expectedDataset};
+  exp0.data.dataContainer = createDataContainer(expectedDataset.data.rows, {
+    fields: expectedDataset.data.fields
+  });
+  delete exp0.data.rows;
+
+  t.deepEqual(parsedValid[0], exp0, 'should parse dataset correctly');
 
   t.deepEqual(parsedValid[0].info, v1expectedInfo_2, 'should parse info correctly');
 
@@ -130,7 +168,11 @@ test('#DatasetSchema -> SchemaManager.parseSavedData.v1 with ts', t => {
     );
   });
 
-  t.deepEqual(parsedValid[0].data.rows, expectedRows, 'should parse rows correctly');
+  t.deepEqual(
+    parsedValid[0].data.dataContainer.flattenData(),
+    expectedRows,
+    'should parse rows correctly'
+  );
 
   t.end();
 });

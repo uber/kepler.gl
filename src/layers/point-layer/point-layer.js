@@ -29,13 +29,26 @@ import {DEFAULT_LAYER_COLOR, CHANNEL_SCALES} from 'constants/default-settings';
 
 import {getTextOffsetByRadius, formatTextLabelData} from '../layer-text-label';
 
-export const pointPosAccessor = ({lat, lng, altitude}) => d => [
-  // lng
-  d.data[lng.fieldIdx],
-  // lat
-  d.data[lat.fieldIdx],
-  altitude && altitude.fieldIdx > -1 ? d.data[altitude.fieldIdx] : 0
-];
+export const pointPosAccessor = ({lat, lng, altitude}) => d => {
+  if (d.refDataContainer) {
+    return [
+      d.refDataContainer.valueAt(d.index, lng.fieldIdx),
+      d.refDataContainer.valueAt(d.index, lat.fieldIdx),
+      altitude && altitude.fieldIdx > -1
+        ? d.refDataContainer.valueAt(d.index, altitude.fieldIdx)
+        : 0
+    ];
+  }
+
+  // ! again, accessor is used on prepared rows
+  return [
+    // lng
+    d.data.valueAt(lng.fieldIdx),
+    // lat
+    d.data.valueAt(lat.fieldIdx),
+    altitude && altitude.fieldIdx > -1 ? d.data.valueAt(altitude.fieldIdx) : 0
+  ];
+};
 
 export const pointRequiredColumns = ['lat', 'lng'];
 export const pointOptionalColumns = ['altitude'];
@@ -186,18 +199,18 @@ export default class PointLayer extends Layer {
     };
   }
 
-  calculateDataAttribute({allData, filteredIndex}, getPosition) {
+  calculateDataAttribute({dataContainer, filteredIndex}, getPosition) {
     const data = [];
 
     for (let i = 0; i < filteredIndex.length; i++) {
       const index = filteredIndex[i];
-      const pos = getPosition({data: allData[index]});
+      const pos = getPosition({refDataContainer: dataContainer, index});
 
       // if doesn't have point lat or lng, do not add the point
       // deck.gl can't handle position = null
       if (pos.every(Number.isFinite)) {
         data.push({
-          data: allData[index],
+          refDataContainer: dataContainer, // this is definitely not needed in attribute, but how to pass it everywhere?
           position: pos,
           // index is important for filter
           index
@@ -233,9 +246,11 @@ export default class PointLayer extends Layer {
   }
   /* eslint-enable complexity */
 
-  updateLayerMeta(allData) {
+  updateLayerMeta(dataContainer) {
     const getPosition = this.getPositionAccessor();
-    const bounds = this.getPointsBounds(allData, d => getPosition({data: d}));
+    const bounds = this.getPointsBounds(dataContainer, (d, i) =>
+      getPosition({refDataContainer: dataContainer, index: i})
+    );
     this.updateMeta({bounds});
   }
 

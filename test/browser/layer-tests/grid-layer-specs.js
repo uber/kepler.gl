@@ -90,7 +90,7 @@ test('#GridLayer -> formatLayerData', t => {
         const {layerData, layer} = result;
         const expectedLayerData = {
           data: [0, 1, 4, 5, 7].map(index => ({
-            data: testRows[index],
+            refDataContainer: preparedDataset.dataContainer,
             index
           })),
           _filterData: () => {},
@@ -170,7 +170,7 @@ test('#GridLayer -> formatLayerData', t => {
         const {layerData} = result;
         const expectedLayerData = {
           data: [0, 1, 4, 5, 7].map(index => ({
-            data: testRows[index],
+            refDataContainer: preparedDataset.dataContainer,
             index
           })),
           _filterData: () => {},
@@ -292,11 +292,11 @@ test('#GridLayer -> renderLayer', t => {
             points: [
               {
                 index: 0,
-                data: preparedDataset.allData[0]
+                refDataContainer: preparedDataset.dataContainer
               },
               {
                 index: 1,
-                data: preparedDataset.allData[1]
+                refDataContainer: preparedDataset.dataContainer
               }
             ],
             lonIdx: 253,
@@ -310,11 +310,11 @@ test('#GridLayer -> renderLayer', t => {
             points: [
               {
                 index: 4,
-                data: preparedDataset.allData[4]
+                refDataContainer: preparedDataset.dataContainer
               },
               {
                 index: 5,
-                data: preparedDataset.allData[5]
+                refDataContainer: preparedDataset.dataContainer
               }
             ],
             lonIdx: 255,
@@ -322,11 +322,11 @@ test('#GridLayer -> renderLayer', t => {
             filteredPoints: [
               {
                 index: 4,
-                data: preparedDataset.allData[4]
+                refDataContainer: preparedDataset.dataContainer
               },
               {
                 index: 5,
-                data: preparedDataset.allData[5]
+                refDataContainer: preparedDataset.dataContainer
               }
             ]
           },
@@ -337,7 +337,7 @@ test('#GridLayer -> renderLayer', t => {
             points: [
               {
                 index: 7,
-                data: preparedDataset.allData[7]
+                refDataContainer: preparedDataset.dataContainer
               }
             ],
             lonIdx: 254,
@@ -345,7 +345,7 @@ test('#GridLayer -> renderLayer', t => {
             filteredPoints: [
               {
                 index: 7,
-                data: preparedDataset.allData[7]
+                refDataContainer: preparedDataset.dataContainer
               }
             ]
           }

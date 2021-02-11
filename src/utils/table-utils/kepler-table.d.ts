@@ -2,6 +2,7 @@ import {RGBColor} from '../../reducers/types';
 import {Layer} from 'layers';
 import {Filter} from '../reducers/vis-state-updaters';
 import {Dataset, Feild} from '../../reducers/vis-state-updaters';
+import {DataContainerInterface} from './data-container-interface';
 
 export type Field = {
   analyzerType: string;
@@ -45,11 +46,7 @@ export type FilterDatasetOpt = {
   ignoreDomain?: boolean;
 };
 
-export function sortDatasetByColumn(
-  dataset: Dataset,
-  column: string,
-  mode?: string
-): Dataset;
+export function sortDatasetByColumn(dataset: Dataset, column: string, mode?: string): Dataset;
 
 export function findPointFieldPairs(fields: Feild[]): FieldPair[];
 
@@ -61,7 +58,8 @@ export class KeplerTable {
 
   // fields and data
   fields: Field[];
-  allData: any[][];
+
+  dataContainer: DataContainerInterface;
 
   allIndexes: number[];
   filteredIndex: number[];

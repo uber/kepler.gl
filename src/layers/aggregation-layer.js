@@ -26,7 +26,17 @@ import {HIGHLIGH_COLOR_3D} from 'constants/default-settings';
 
 import {CHANNEL_SCALES, FIELD_OPTS, DEFAULT_AGGREGATION} from 'constants/default-settings';
 
-export const pointPosAccessor = ({lat, lng}) => d => [d.data[lng.fieldIdx], d.data[lat.fieldIdx]];
+export const pointPosAccessor = ({lat, lng}) => d => {
+  if (d.refDataContainer) {
+    return [
+      d.refDataContainer.valueAt(d.index, lng.fieldIdx),
+      d.refDataContainer.valueAt(d.index, lat.fieldIdx)
+    ];
+  }
+
+  throw Error('Missing data container in an accessor');
+  // return [d.data[lng.fieldIdx], d.data[lat.fieldIdx]];
+};
 
 export const pointPosResolver = ({lat, lng}) => `${lat.fieldIdx}-${lng.fieldIdx}`;
 
@@ -34,7 +44,7 @@ export const getValueAggrFunc = (field, aggregation) => {
   return points => {
     return field
       ? aggregate(
-          points.map(p => field.valueAccessor(p.data)),
+          points.map(p => field.valueAccessor(p.refDataContainer.row(p.index))),
           aggregation
         )
       : points.length;
@@ -136,7 +146,7 @@ export default class AggregationLayer extends Layer {
   /**
    * Aggregation layer handles visual channel aggregation inside deck.gl layer
    */
-  updateLayerVisualChannel({data, allData}, channel) {
+  updateLayerVisualChannel({data, dataContainer}, channel) {
     this.validateVisualChannel(channel);
   }
 
@@ -207,26 +217,28 @@ export default class AggregationLayer extends Layer {
     return this;
   }
 
-  updateLayerMeta(allData, getPosition) {
+  updateLayerMeta(dataContainer, getPosition) {
     // get bounds from points
-    const bounds = this.getPointsBounds(allData, d => getPosition({data: d}));
+    const bounds = this.getPointsBounds(dataContainer, (d, i) =>
+      getPosition({refDataContainer: dataContainer, index: i})
+    );
 
     this.updateMeta({bounds});
   }
 
-  calculateDataAttribute({allData, filteredIndex}, getPosition) {
+  calculateDataAttribute({dataContainer, filteredIndex}, getPosition) {
     const data = [];
 
     for (let i = 0; i < filteredIndex.length; i++) {
       const index = filteredIndex[i];
-      const pos = getPosition({data: allData[index]});
+      const pos = getPosition({refDataContainer: dataContainer, index});
 
       // if doesn't have point lat or lng, do not add the point
       // deck.gl can't handle position = null
       if (pos.every(Number.isFinite)) {
         data.push({
-          index,
-          data: allData[index]
+          refDataContainer: dataContainer, // this is definitely not needed in attribute, but how to pass it everywhere?
+          index
         });
       }
     }

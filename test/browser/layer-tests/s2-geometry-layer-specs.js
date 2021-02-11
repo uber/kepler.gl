@@ -96,8 +96,8 @@ test('#S2Geometry -> formatLayerData', t => {
         const {layerData, layer} = result;
         const expectedLayerData = {
           data: [
-            {index: 0, token: '80858004', data: testRows[0]},
-            {index: 4, token: '8085801c', data: testRows[4]}
+            {index: 0, token: '80858004', refDataContainer: preparedDataset.dataContainer},
+            {index: 4, token: '8085801c', refDataContainer: preparedDataset.dataContainer}
           ],
           getElevation: () => {},
           getFillColor: () => {},

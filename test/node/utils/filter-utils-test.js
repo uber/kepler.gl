@@ -39,6 +39,8 @@ import {getDatasetFieldIndexForFilter} from 'utils/gpu-filter-utils';
 import {FILTER_TYPES} from 'constants/default-settings';
 import {mockPolygonFeature, mockPolygonData} from '../../fixtures/polygon';
 
+import {createDataContainer} from 'utils/table-utils';
+
 /* eslint-disable max-statements */
 test('filterUtils -> adjustValueToFilterDomain', t => {
   // TODO: needs id
@@ -473,7 +475,7 @@ test('filterUtils -> diffFilters', t => {
 
 test('filterUtils -> getTimestampFieldDomain', t => {
   /* eslint-disable func-style */
-  const valueAccessor = d => moment.utc(d).valueOf();
+  const valueAccessorRef = d => moment.utc(d).valueOf();
   /* eslint-enable func-style */
 
   const timeData = {
@@ -541,11 +543,41 @@ test('filterUtils -> getTimestampFieldDomain', t => {
   };
 
   Object.keys(timeData).forEach(key => {
-    const tsFieldDomain = getTimestampFieldDomain(timeData[key].input, valueAccessor);
+    const data = Array.isArray(timeData[key].input)
+      ? {
+          rows: timeData[key].input.map(inputDate => {
+            // make array of rows
+            return [inputDate];
+          }),
+          fields: [
+            {
+              name: 'a',
+              type: 'timestamp',
+              format: 'YYYY/M/D HH:mm:ss.SSSS',
+              fieldIdx: 0,
+              analyzerType: 'DATETIME',
+              valueAccessor: values => moment.utc(values.valueAt(0)).valueOf()
+            }
+          ]
+        }
+      : null;
+
+    let tsFieldDomain;
+
+    if (data) {
+      const dataContainer = createDataContainer(data.rows, {fields: data.fields});
+      const {valueAccessor} = data.fields[0];
+      tsFieldDomain = getTimestampFieldDomain(dataContainer, valueAccessor);
+    } else {
+      // we want to test bad input
+      tsFieldDomain = getTimestampFieldDomain(timeData[key].input, valueAccessorRef);
+    }
+
+    // const tsFieldDomain = getTimestampFieldDomain(timeData[key].input, valueAccessor);
     t.deepEqual(
       Object.keys(tsFieldDomain).sort(),
       Object.keys(timeData[key].expect).sort(),
-      'Should domain should have same keys'
+      'domain should have same keys'
     );
 
     Object.keys(timeData[key].expect).forEach(k => {

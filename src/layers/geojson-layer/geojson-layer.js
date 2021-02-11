@@ -60,7 +60,11 @@ export const geojsonVisConfigs = {
 };
 
 export const geoJsonRequiredColumns = ['geojson'];
-export const featureAccessor = ({geojson}) => d => d[geojson.fieldIdx];
+export const featureAccessor = ({geojson}) => d => {
+  // TODO should be refDataContainer here
+  return d.valueAt(geojson.fieldIdx);
+};
+
 // access feature properties from geojson sub layer
 export const defaultElevation = 500;
 export const defaultLineWidth = 1;
@@ -138,7 +142,9 @@ export default class GeoJsonLayer extends Layer {
         accessor: 'getElevation',
         condition: config => config.visConfig.enable3d,
         nullValue: 0,
-        getAttributeValue: () => d => d.properties.elevation || defaultElevation
+        getAttributeValue: () => d => {
+          return d.properties.elevation || defaultElevation;
+        }
       },
       radius: {
         property: 'radius',
@@ -203,19 +209,20 @@ export default class GeoJsonLayer extends Layer {
     };
   }
 
-  getHoverData(object, allData) {
-    // index of allData is saved to feature.properties
-    return allData[object.properties.index];
+  getHoverData(object, dataContainer) {
+    // index for dataContainer is saved to feature.properties
+    return dataContainer.row(object.properties.index, true).values();
   }
 
-  calculateDataAttribute({allData, filteredIndex}, getPosition) {
+  calculateDataAttribute({dataContainer, filteredIndex}, getPosition) {
     return filteredIndex.map(i => this.dataToFeature[i]).filter(d => d);
   }
 
   formatLayerData(datasets, oldLayerData) {
-    const {allData, gpuFilter} = datasets[this.config.dataId];
+    const {dataContainer, gpuFilter} = datasets[this.config.dataId];
     const {data} = this.updateData(datasets, oldLayerData);
-    const valueAccessor = f => allData[f.properties.index];
+
+    const valueAccessor = f => dataContainer.row(f.properties.index);
     const indexAccessor = f => f.properties.index;
     const accessors = this.getAttributeAccessors(valueAccessor);
 
@@ -226,9 +233,9 @@ export default class GeoJsonLayer extends Layer {
     };
   }
 
-  updateLayerMeta(allData) {
+  updateLayerMeta(dataContainer) {
     const getFeature = this.getPositionAccessor();
-    this.dataToFeature = getGeojsonDataMaps(allData, getFeature);
+    this.dataToFeature = getGeojsonDataMaps(dataContainer, getFeature);
 
     // get bounds from features
     const bounds = getGeojsonBounds(this.dataToFeature);
@@ -243,8 +250,8 @@ export default class GeoJsonLayer extends Layer {
     this.updateMeta({bounds, fixedRadius, featureTypes});
   }
 
-  setInitialLayerConfig({allData}) {
-    this.updateLayerMeta(allData);
+  setInitialLayerConfig({dataContainer}) {
+    this.updateLayerMeta(dataContainer);
 
     const {featureTypes} = this.meta;
     // default settings is stroke: true, filled: false

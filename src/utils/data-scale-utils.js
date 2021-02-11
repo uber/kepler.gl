@@ -35,8 +35,11 @@ export function getQuantileDomain(data, valueAccessor, sortFunc) {
  * return ordinal domain for an array of data
  * @type {typeof import('./data-scale-utils').getOrdinalDomain}
  */
-export function getOrdinalDomain(data, valueAccessor) {
-  const values = typeof valueAccessor === 'function' ? data.map(valueAccessor) : data;
+export function getOrdinalDomain(dataContainer, valueAccessor) {
+  const values =
+    typeof valueAccessor === 'function'
+      ? dataContainer.map(valueAccessor, true)
+      : dataContainer.map(value => value); // ! Array of rows is expected by tests
 
   return unique(values)
     .filter(notNullorUndefined)

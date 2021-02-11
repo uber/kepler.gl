@@ -127,12 +127,12 @@ test('#PointLayer -> formatLayerData', t => {
           ],
           data: [
             {
-              data: testRows[0],
+              refDataContainer: preparedDataset.dataContainer,
               index: 0,
               position: [testRows[0][2], testRows[0][1], testRows[0][7]]
             },
             {
-              data: testRows[4],
+              refDataContainer: preparedDataset.dataContainer,
               index: 4,
               position: [testRows[4][2], testRows[4][1], testRows[4][7]]
             }
@@ -239,12 +239,12 @@ test('#PointLayer -> formatLayerData', t => {
         const expectedLayerData = {
           data: [
             {
-              data: testRows[0],
+              refDataContainer: preparedDataset.dataContainer,
               index: 0,
               position: [testRows[0][2], testRows[0][1], 0]
             },
             {
-              data: testRows[4],
+              refDataContainer: preparedDataset.dataContainer,
               index: 4,
               position: [testRows[4][2], testRows[4][1], 0]
             }
@@ -333,12 +333,12 @@ test('#PointLayer -> formatLayerData', t => {
         const expectedLayerData = {
           data: [
             {
-              data: testRows[0],
+              refDataContainer: preparedDataset.dataContainer,
               index: 0,
               position: [testRows[0][2], testRows[0][1], 0]
             },
             {
-              data: testRows[4],
+              refDataContainer: preparedDataset.dataContainer,
               index: 4,
               position: [testRows[4][2], testRows[4][1], 0]
             }
@@ -418,12 +418,12 @@ test('#PointLayer -> formatLayerData', t => {
         const expectedLayerData = {
           data: [
             {
-              data: testRows[0],
+              refDataContainer: preparedDataset.dataContainer,
               index: 0,
               position: [testRows[0][2], testRows[0][1], 0]
             },
             {
-              data: testRows[4],
+              refDataContainer: preparedDataset.dataContainer,
               index: 4,
               position: [testRows[4][2], testRows[4][1], 0]
             }

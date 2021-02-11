@@ -27,10 +27,19 @@ import {getCentroid, idToPolygonGeo, h3IsValid, getHexFields} from './h3-utils';
 import H3HexagonLayerIcon from './h3-hexagon-layer-icon';
 import {CHANNEL_SCALES, HIGHLIGH_COLOR_3D} from 'constants/default-settings';
 
+import {createDataContainer} from '../../utils/table-utils';
+
 const DEFAULT_LINE_SCALE_VALUE = 8;
 
 export const hexIdRequiredColumns = ['hex_id'];
-export const hexIdAccessor = ({hex_id}) => d => d.data[hex_id.fieldIdx];
+export const hexIdAccessor = ({hex_id}) => d => {
+  if (d.refDataContainer) {
+    return d.refDataContainer.valueAt(d.index, hex_id.fieldIdx);
+  }
+
+  // TODO Still getting rows here...
+  return d.data.valueAt(hex_id.fieldIdx);
+};
 export const defaultElevation = 500;
 export const defaultCoverage = 1;
 
@@ -111,8 +120,8 @@ export default class HexagonIdLayer extends Layer {
     return this;
   }
 
-  static findDefaultLayerProps({fields = [], allData = []}) {
-    const hexFields = getHexFields(fields, allData);
+  static findDefaultLayerProps({fields = [], dataContainer}) {
+    const hexFields = getHexFields(fields, dataContainer);
     if (!hexFields.length) {
       return {props: []};
     }
@@ -142,19 +151,19 @@ export default class HexagonIdLayer extends Layer {
     };
   }
 
-  calculateDataAttribute({allData, filteredIndex}, getHexId) {
+  calculateDataAttribute({dataContainer, filteredIndex}, getHexId) {
     const data = [];
 
     for (let i = 0; i < filteredIndex.length; i++) {
       const index = filteredIndex[i];
-      const id = getHexId({data: allData[index]});
+      const id = getHexId({data: dataContainer.row(index)}); // TODO shared rows
       const centroid = this.dataToFeature.centroids[index];
 
       if (centroid) {
         data.push({
           // keep a reference to the original data index
           index,
-          data: allData[index],
+          refDataContainer: dataContainer,
           id,
           centroid
         });
@@ -180,8 +189,9 @@ export default class HexagonIdLayer extends Layer {
   }
   /* eslint-enable complexity */
 
-  updateLayerMeta(allData, getHexId) {
-    const centroids = allData.map((d, index) => {
+  updateLayerMeta(dataContainer, getHexId) {
+    // TODO use shared rows here
+    const centroids = dataContainer.map((d, index) => {
       const id = getHexId({data: d});
       if (!h3IsValid(id)) {
         return null;
@@ -191,7 +201,9 @@ export default class HexagonIdLayer extends Layer {
       return getCentroid({id});
     });
 
-    const bounds = this.getPointsBounds(centroids);
+    const centroidsDataContainer = createDataContainer(centroids, {fields: ['x', 'y']});
+
+    const bounds = this.getPointsBounds(centroidsDataContainer);
     this.dataToFeature = {centroids};
     this.updateMeta({bounds});
   }

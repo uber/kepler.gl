@@ -52,12 +52,14 @@ export function idToPolygonGeo(object, properties) {
   };
 }
 
-export const isHexField = (field, fieldIdx, allData) => {
+export const isHexField = (field, fieldIdx, dataContainer) => {
   if (field.type !== ALL_FIELD_TYPES.string) {
     return false;
   }
-  const firstDP = allData.find(d => notNullorUndefined(d[fieldIdx]));
-  return firstDP && h3IsValid(firstDP[fieldIdx]);
+
+  const firstDP = dataContainer.find(d => notNullorUndefined(d.valueAt(fieldIdx)), true);
+  return firstDP && h3IsValid(firstDP.valueAt(fieldIdx));
 };
 
-export const getHexFields = (fields, allData) => fields.filter((f, i) => isHexField(f, i, allData));
+export const getHexFields = (fields, dataContainer) =>
+  fields.filter((f, i) => isHexField(f, i, dataContainer));

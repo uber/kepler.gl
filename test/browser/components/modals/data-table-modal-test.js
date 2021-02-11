@@ -41,6 +41,8 @@ import {geoStyleFields, geoStyleRows} from 'test/fixtures/geojson';
 import {StateWFiles, testCsvDataId, testGeoJsonDataId} from 'test/helpers/mock-state';
 import {appInjector} from '../../../../src/components/container';
 
+import {createDataContainer} from 'utils/table-utils';
+
 const DataTableModal = appInjector.get(DataTableModalFactory);
 const DataTable = appInjector.get(DataTableFactory);
 const FieldToken = appInjector.get(FieldTokenFactory);
@@ -174,7 +176,14 @@ test('Components -> DataTableModal.render: csv 1', t => {
 
   t.deepEqual(props.columns, expectedColumns, 'DataTable should have the correct props.columns');
   t.deepEqual(props.colMeta, expectedColMeta, 'DataTable should have the correct props.colMeta');
-  t.equal(props.rows, testAllData, 'DataTable should have the correct props.rows');
+
+  const datasetId = Object.keys(StateWFiles.visState.datasets)[0];
+
+  t.equal(
+    props.dataContainer,
+    StateWFiles.visState.datasets[datasetId].dataContainer,
+    'DataTable should have the correct props.rows'
+  );
   // we can't test it without mocking the canvas response
   t.deepEqual(
     Object.keys(props.cellSizeCache),
@@ -505,17 +514,20 @@ test('Components -> DatableModal -> sort/pin and copy should be called with the 
 test('Components -> cellSize -> renderedSize', t => {
   prepareMockCanvas();
 
+  const fields = [
+    {name: testColumns[0], type: 'geojson'},
+    {name: testColumns[1], type: 'real'},
+    {name: testColumns[2], type: 'string'}
+  ];
+  const dataContainer = createDataContainer(texts, {fields});
+
   const wrapper = mountWithTheme(
     <DataTableModal
       datasets={{
         smoothie: {
           id: 'smoothie',
-          allData: texts,
-          fields: [
-            {name: testColumns[0], type: 'geojson'},
-            {name: testColumns[1], type: 'real'},
-            {name: testColumns[2], type: 'string'}
-          ],
+          dataContainer,
+          fields,
           color: [113, 113, 113]
         }
       }}
@@ -545,12 +557,14 @@ test('Components -> cellSize -> renderedSize', t => {
 });
 
 test('Components -> DataTableModal.render: csv 2', t => {
+  const dataContainer = createDataContainer(geoStyleRows, {fields: geoStyleFields});
+
   const wrapper = mountWithTheme(
     <DataTableModal
       datasets={{
         smoothie: {
           id: 'smoothie',
-          allData: geoStyleRows,
+          dataContainer,
           fields: geoStyleFields,
           color: [113, 113, 113],
           data: geoStyleRows

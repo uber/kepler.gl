@@ -54,13 +54,13 @@ const getDataRowCount = (datasets, selectedDataset, filtered, intl) => {
       {fileCount: Object.keys(datasets).length}
     );
   }
-  const {allData, filteredIdxCPU} = selectedData;
+  const {dataContainer, filteredIdxCPU} = selectedData;
 
   if (filtered && !filteredIdxCPU) {
     return '-';
   }
 
-  const rowCount = filtered ? filteredIdxCPU.length : allData.length;
+  const rowCount = filtered ? filteredIdxCPU.length : dataContainer.numRows();
 
   return intl.formatMessage(
     {id: 'modal.exportData.rowCount'},

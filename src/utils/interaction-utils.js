@@ -145,8 +145,8 @@ export function getTooltipDisplayDeltaValue({
     // comparison mode only works for numeric field
     (field.type === ALL_FIELD_TYPES.integer || field.type === ALL_FIELD_TYPES.real)
   ) {
-    const baseDp = primaryData[fieldIdx];
-    const dp = data[fieldIdx];
+    const baseDp = primaryData.valueAt(fieldIdx);
+    const dp = data.valueAt(fieldIdx);
     if (isNumber(baseDp) && isNumber(dp)) {
       const deltaValue = compareType === COMPARE_TYPES.RELATIVE ? dp / baseDp - 1 : dp - baseDp;
       const deltaFormat =
@@ -174,11 +174,13 @@ export function getTooltipDisplayDeltaValue({
  * @type {typeof import('./interaction-utils').getTooltipDisplayValue}
  */
 export function getTooltipDisplayValue({item, field, data, fieldIdx}) {
-  if (!notNullorUndefined(data[fieldIdx])) {
+  const dataValue = data.valueAt(fieldIdx);
+
+  if (!notNullorUndefined(dataValue)) {
     return '';
   }
 
   return item.format
-    ? getFormatter(item.format, field)(data[fieldIdx])
-    : parseFieldValue(data[fieldIdx], field.type);
+    ? getFormatter(item.format, field)(dataValue)
+    : parseFieldValue(dataValue, field.type);
 }

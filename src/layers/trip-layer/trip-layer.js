@@ -58,7 +58,7 @@ export const tripVisConfigs = {
 };
 
 export const geoJsonRequiredColumns = ['geojson'];
-export const featureAccessor = ({geojson}) => d => d[geojson.fieldIdx];
+export const featureAccessor = ({geojson}) => d => d.valueAt(geojson.fieldIdx);
 export const featureResolver = ({geojson}) => geojson.fieldIdx;
 
 export default class TripLayer extends Layer {
@@ -130,7 +130,7 @@ export default class TripLayer extends Layer {
     return this.getFeature(this.config.columns);
   }
 
-  static findDefaultLayerProps({label, fields = [], allData = [], id}, foundLayers) {
+  static findDefaultLayerProps({label, fields = [], dataContainer, id}, foundLayers) {
     const geojsonColumns = fields.filter(f => f.type === 'geojson').map(f => f.name);
 
     const defaultColumns = {
@@ -140,7 +140,7 @@ export default class TripLayer extends Layer {
     const geoJsonColumns = this.findDefaultColumnField(defaultColumns, fields);
 
     const tripColumns = (geoJsonColumns || []).filter(col =>
-      isTripGeoJsonField(allData, fields[col.geojson.fieldIdx])
+      isTripGeoJsonField(dataContainer, fields[col.geojson.fieldIdx])
     );
 
     if (!tripColumns.length) {
@@ -174,23 +174,23 @@ export default class TripLayer extends Layer {
     };
   }
 
-  getHoverData(object, allData) {
-    // index of allData is saved to feature.properties
-    return allData[object.properties.index];
+  getHoverData(object, dataContainer) {
+    // index for dataContainer is saved to feature.properties
+    return dataContainer.row(object.properties.index);
   }
 
-  calculateDataAttribute({allData, filteredIndex}, getPosition) {
+  calculateDataAttribute({dataContainer, filteredIndex}, getPosition) {
     return filteredIndex
       .map(i => this.dataToFeature[i])
       .filter(d => d && d.geometry.type === 'LineString');
   }
 
   formatLayerData(datasets, oldLayerData) {
-    // to-do: parse segment from allData
-    const {allData, gpuFilter} = datasets[this.config.dataId];
+    // to-do: parse segment from dataContainer
+    const {dataContainer, gpuFilter} = datasets[this.config.dataId];
     const {data} = this.updateData(datasets, oldLayerData);
 
-    const valueAccessor = f => allData[f.properties.index];
+    const valueAccessor = f => dataContainer.row(f.properties.index);
     const indexAccessor = f => f.properties.index;
     const accessors = this.getAttributeAccessors(valueAccessor);
 
@@ -212,14 +212,14 @@ export default class TripLayer extends Layer {
     });
   }
 
-  updateLayerMeta(allData) {
+  updateLayerMeta(dataContainer) {
     const getFeature = this.getPositionAccessor();
     if (getFeature === this.meta.getFeature) {
       // TODO: revisit this after gpu filtering
       return;
     }
 
-    this.dataToFeature = getGeojsonDataMaps(allData, getFeature);
+    this.dataToFeature = getGeojsonDataMaps(dataContainer, getFeature);
 
     const {dataToTimeStamp, animationDomain} = parseTripGeoJsonTimestamp(this.dataToFeature);
 
@@ -235,8 +235,8 @@ export default class TripLayer extends Layer {
     this.updateMeta({bounds, featureTypes, getFeature});
   }
 
-  setInitialLayerConfig({allData}) {
-    this.updateLayerMeta(allData);
+  setInitialLayerConfig({dataContainer}) {
+    this.updateLayerMeta(dataContainer);
     return this;
   }
 

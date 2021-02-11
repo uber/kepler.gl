@@ -4,54 +4,54 @@ Replace kepler.gl dataset with table class
 
 ```js
 export type KeplerDataset = {
-  id: string;
-  label?: string;
-  color: RGBColor;
+  id: string,
+  label?: string,
+  color: RGBColor,
 
   // fields and data
-  fields: KeplerField[];
-  allData: any[][];
+  fields: KeplerField[],
+  dataContainer: DataContainer,
 
-  allIndexes: number[];
-  filteredIndex: number[];
-  filteredIdxCPU: number[];
-  filteredIndexForDomain: number[];
+  allIndexes: number[],
+  filteredIndex: number[],
+  filteredIdxCPU: number[],
+  filteredIndexForDomain: number[],
   fieldPairs: {
-    defaultName: string;
-    pair: any;
-    suffix: string[];
-  }[];
+    defaultName: string,
+    pair: any,
+    suffix: string[]
+  }[],
   gpuFilter: {
-    filterRange: number[][];
-    filterValueUpdateTriggers: any;
-    filterValueAccessor: any;
-  };
-  filterRecord: FilterRecord;
-  filterRecordCPU: FilterRecord;
-  changedFilters: any;
+    filterRange: number[][],
+    filterValueUpdateTriggers: any,
+    filterValueAccessor: any
+  },
+  filterRecord: FilterRecord,
+  filterRecordCPU: FilterRecord,
+  changedFilters: any,
 
   // table-injected metadata
   sortColumn?: {
     // column name: sorted idx
-    [key: string]: number[];
-  };
-  sortOrder?: string; // ASCENDING | DESCENDING | UNSORT
+    [key: string]: number[]
+  },
+  sortOrder?: string, // ASCENDING | DESCENDING | UNSORT
 
-  pinnedColumns?: string[];
+  pinnedColumns?: string[],
   // table-injected metadata
-  metadata?: object;
+  metadata?: object
 };
 
 export type KeplerField = {
-  analyzerType: string;
-  id: string;
-  name: string;
-  format: string;
-  fieldIdx: number;
-  type: string;
+  analyzerType: string,
+  id: string,
+  name: string,
+  format: string,
+  fieldIdx: number,
+  type: string,
 
   // meta data, storing domain and mappedValues
-  filterProps?: any;
+  filterProps?: any
 };
 ```
 
@@ -105,8 +105,8 @@ table.allIndexes,
    Sort a column, return an sorted index, assign to `sortColumn`, `sortOrder`
 
 8. `filterDataset(filters, layers, opt)`
-  to replace `filter-utils.js` `filterDataset`
-  Apply filters to dataset, return the filtered dataset with updated `gpuFilter`, `filterRecord`, `filteredIndex`, `filteredIndexForDomain`
+   to replace `filter-utils.js` `filterDataset`
+   Apply filters to dataset, return the filtered dataset with updated `gpuFilter`, `filterRecord`, `filteredIndex`, `filteredIndexForDomain`
 
 9. `filterDatasetCPU(filters)`
    to replace `filter-utils.js` `filterDatasetCPU`

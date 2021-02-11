@@ -84,7 +84,15 @@ export function findMapBounds(layers) {
 
 export function getLatLngBounds(points, idx, limit) {
   const lats = points
-    .map(d => Array.isArray(d) && d[idx])
+    .map(d => {
+      // TODO check for DataRow
+      if (d.valueAt && d.valueAt(idx)) {
+        return d.valueAt(idx);
+      }
+
+      // TODO because of different accessors we are still getting arrays as input
+      return Array.isArray(d) && d[idx];
+    })
     .filter(Number.isFinite)
     .sort(numberSort);
 
@@ -100,7 +108,18 @@ export function clamp([min, max], val) {
   return val <= min ? min : val >= max ? max : val;
 }
 
-export function getSampleData(data, sampleSize = 500, getValue = d => d) {
+export function getSampleData(dataContainer, sampleSize = 500, getValue = d => d) {
+  const numberOfRows = dataContainer.numRows();
+  const sampleStep = Math.max(Math.floor(numberOfRows / sampleSize), 1);
+  const output = [];
+  for (let i = 0; i < numberOfRows; i += sampleStep) {
+    output.push(getValue(dataContainer.row(i)));
+  }
+
+  return output;
+}
+
+export function getSampleDataArray(data, sampleSize = 500, getValue = d => d) {
   const sampleStep = Math.max(Math.floor(data.length / sampleSize), 1);
   const output = [];
   for (let i = 0; i < data.length; i += sampleStep) {
@@ -131,10 +150,10 @@ export function timeToUnixMilli(value, format) {
  */
 export function maybeToDate(isTime, fieldIdx, format, d) {
   if (isTime) {
-    return timeToUnixMilli(d[fieldIdx], format);
+    return timeToUnixMilli(d.valueAt(fieldIdx), format);
   }
 
-  return d[fieldIdx];
+  return d.valueAt(fieldIdx);
 }
 
 /**

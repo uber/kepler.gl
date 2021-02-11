@@ -448,28 +448,34 @@ export function updateFilterDataId(dataId) {
 /**
  * @type {typeof import('./filter-utils').filterDataByFilterTypes}
  */
-export function filterDataByFilterTypes({dynamicDomainFilters, cpuFilters, filterFuncs}, allData) {
+export function filterDataByFilterTypes(
+  {dynamicDomainFilters, cpuFilters, filterFuncs},
+  dataContainer
+) {
   const result = {
     ...(dynamicDomainFilters ? {filteredIndexForDomain: []} : {}),
     ...(cpuFilters ? {filteredIndex: []} : {})
   };
 
-  for (let i = 0; i < allData.length; i++) {
-    const d = allData[i];
+  const filterContext = {row: dataContainer.row(0, true), rowIndex: -1};
 
-    const matchForDomain =
-      dynamicDomainFilters && dynamicDomainFilters.every(filter => filterFuncs[filter.id](d, i));
+  const filterFuncCaller = filter =>
+    filterFuncs[filter.id](filterContext.row, filterContext.rowIndex);
 
+  for (const row of dataContainer.rows(true)) {
+    filterContext.rowIndex++;
+    filterContext.row = row;
+
+    const matchForDomain = dynamicDomainFilters && dynamicDomainFilters.every(filterFuncCaller);
     if (matchForDomain) {
       // @ts-ignore
-      result.filteredIndexForDomain.push(i);
+      result.filteredIndexForDomain.push(filterContext.rowIndex);
     }
 
-    const matchForRender = cpuFilters && cpuFilters.every(filter => filterFuncs[filter.id](d, i));
-
+    const matchForRender = cpuFilters && cpuFilters.every(filterFuncCaller);
     if (matchForRender) {
       // @ts-ignore
-      result.filteredIndex.push(i);
+      result.filteredIndex.push(filterContext.rowIndex);
     }
   }
 
@@ -588,13 +594,14 @@ export function adjustValueToFilterDomain(value, {domain, type}) {
  *
  * @type {typeof import('./filter-utils').getNumericFieldDomain}
  */
-export function getNumericFieldDomain(data, valueAccessor) {
+export function getNumericFieldDomain(dataContainer, valueAccessor) {
   let domain = [0, 1];
   let step = 0.1;
 
-  const mappedValue = Array.isArray(data) ? data.map(valueAccessor) : [];
+  // @ts-ignore
+  const mappedValue = dataContainer.map ? dataContainer.map(valueAccessor) : [];
 
-  if (Array.isArray(data) && data.length > 1) {
+  if (dataContainer.numRows && dataContainer.numRows() > 1) {
     domain = ScaleUtils.getLinearDomain(mappedValue);
     const diff = domain[1] - domain[0];
 
@@ -650,11 +657,12 @@ export function getNumericStepSize(diff) {
  *
  * @type {typeof import('./filter-utils').getTimestampFieldDomain}
  */
-export function getTimestampFieldDomain(data, valueAccessor) {
+export function getTimestampFieldDomain(dataContainer, valueAccessor) {
   // to avoid converting string format time to epoch
   // every time we compare we store a value mapped to int in filter domain
 
-  const mappedValue = Array.isArray(data) ? data.map(valueAccessor) : [];
+  // @ts-ignore
+  const mappedValue = dataContainer.map ? dataContainer.map(valueAccessor) : [];
   const domain = ScaleUtils.getLinearDomain(mappedValue);
   let step = 0.01;
 
@@ -815,11 +823,14 @@ export function getFilterPlot(filter, dataset) {
   }
 
   // return lineChart
-  const series = dataset.allData
-    .map((d, i) => ({
-      x: mappedValue[i],
-      y: d[fieldIdx]
-    }))
+  const series = dataset.dataContainer
+    .map(
+      (row, rowIndex) => ({
+        x: mappedValue[rowIndex],
+        y: row.valueAt(fieldIdx)
+      }),
+      true
+    )
     .filter(({x, y}) => Number.isFinite(x) && Number.isFinite(y))
     .sort((a, b) => ascending(a.x, b.x));
 

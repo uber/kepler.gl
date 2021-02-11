@@ -25,6 +25,8 @@ import Layer from '../base-layer';
 import S2LayerIcon from './s2-layer-icon';
 import {getS2Center} from './s2-utils';
 
+import {createDataContainer} from '../../utils/table-utils';
+
 const zoomFactorValue = 8;
 
 export const S2_TOKEN_FIELDS = {
@@ -32,7 +34,11 @@ export const S2_TOKEN_FIELDS = {
 };
 
 export const s2RequiredColumns = ['token'];
-export const S2TokenAccessor = ({token}) => d => d.data[token.fieldIdx];
+export const S2TokenAccessor = ({token}) => d => {
+  if (d.refDataContainer) {
+    return d.refDataContainer.valueAt(d.index, token.fieldIdx);
+  }
+};
 export const defaultElevation = 500;
 export const defaultLineWidth = 1;
 
@@ -163,17 +169,17 @@ export default class S2GeometryLayer extends Layer {
     };
   }
 
-  calculateDataAttribute({allData, filteredIndex}, getS2Token) {
+  calculateDataAttribute({dataContainer, filteredIndex}, getS2Token) {
     const data = [];
     for (let i = 0; i < filteredIndex.length; i++) {
       const index = filteredIndex[i];
-      const token = getS2Token({data: allData[index]});
+      const token = getS2Token({refDataContainer: dataContainer, index});
 
       if (token) {
         data.push({
           // keep a reference to the original data index
           index,
-          data: allData[index],
+          refDataContainer: dataContainer,
           token
         });
       }
@@ -181,13 +187,14 @@ export default class S2GeometryLayer extends Layer {
     return data;
   }
 
-  updateLayerMeta(allData, getS2Token) {
-    const centroids = allData.reduce((acc, entry) => {
-      const s2Token = getS2Token({data: entry});
+  updateLayerMeta(dataContainer, getS2Token) {
+    const centroids = dataContainer.reduce((acc, entry, index) => {
+      const s2Token = getS2Token({refDataContainer: dataContainer, index});
       return s2Token ? [...acc, getS2Center(s2Token)] : acc;
     }, []);
 
-    const bounds = this.getPointsBounds(centroids);
+    const centroidsDataContainer = createDataContainer(centroids, {fields: ['x', 'y']});
+    const bounds = this.getPointsBounds(centroidsDataContainer);
     this.dataToFeature = {centroids};
     this.updateMeta({bounds});
   }

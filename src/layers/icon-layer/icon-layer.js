@@ -32,8 +32,20 @@ const brushingExtension = new BrushingExtension();
 
 export const SVG_ICON_URL = `${CLOUDFRONT}/icons/svg-icons.json`;
 
-export const iconPosAccessor = ({lat, lng}) => d => [d.data[lng.fieldIdx], d.data[lat.fieldIdx]];
-export const iconAccessor = ({icon}) => d => d.data[icon.fieldIdx];
+export const iconPosAccessor = ({lat, lng}) => d => {
+  if (d.refDataContainer) {
+    return [
+      d.refDataContainer.valueAt(d.index, lng.fieldIdx, true),
+      d.refDataContainer.valueAt(d.index, lat.fieldIdx, true)
+    ];
+  }
+};
+
+export const iconAccessor = ({icon}) => d => {
+  if (d.refDataContainer) {
+    return d.refDataContainer.valueAt(d.index, icon.fieldIdx, true);
+  }
+};
 
 export const iconRequiredColumns = ['lat', 'lng', 'icon'];
 
@@ -178,14 +190,14 @@ export default class IconLayer extends Layer {
     return {props};
   }
 
-  calculateDataAttribute({allData, filteredIndex}, getPosition) {
+  calculateDataAttribute({dataContainer, filteredIndex}, getPosition) {
     const getIcon = this.getIconAccessor();
     const data = [];
 
     for (let i = 0; i < filteredIndex.length; i++) {
       const index = filteredIndex[i];
-      const pos = getPosition({data: allData[index]});
-      const icon = getIcon({data: allData[index]});
+      const pos = getPosition({refDataContainer: dataContainer, index});
+      const icon = getIcon({refDataContainer: dataContainer, index});
 
       // if doesn't have point lat or lng, do not add the point
       // deck.gl can't handle position = null
@@ -193,7 +205,7 @@ export default class IconLayer extends Layer {
         data.push({
           index,
           icon,
-          data: allData[index]
+          refDataContainer: dataContainer
         });
       }
     }
@@ -227,8 +239,10 @@ export default class IconLayer extends Layer {
     };
   }
 
-  updateLayerMeta(allData, getPosition) {
-    const bounds = this.getPointsBounds(allData, d => getPosition({data: d}));
+  updateLayerMeta(dataContainer, getPosition) {
+    const bounds = this.getPointsBounds(dataContainer, (d, i) =>
+      getPosition({refDataContainer: dataContainer, index: i})
+    );
     this.updateMeta({bounds});
   }
 

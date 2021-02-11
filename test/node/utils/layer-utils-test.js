@@ -36,6 +36,8 @@ import {getNextColorMakerValue} from 'test/helpers/layer-utils';
 import tripGeojson, {timeStampDomain, tripBounds} from 'test/fixtures/trip-geojson';
 import {geoJsonWithStyle} from 'test/fixtures/geojson';
 
+import {createDataContainer} from 'utils/table-utils';
+
 test('layerUtils -> findDefaultLayer.1', t => {
   const inputFields = [
     // layer 1
@@ -573,30 +575,33 @@ test('layerUtils -> findDefaultLayer:GeojsonLayer', t => {
 
   const {fields} = dataset;
 
+  const dataContainer = createDataContainer([
+    [
+      0,
+      1,
+      2,
+      3,
+      {
+        type: 'Feature',
+        properties: {index: 0},
+        geometry: {type: 'Point', coordinates: []}
+      },
+      {
+        type: 'Feature',
+        properties: {index: 0},
+        geometry: {type: 'Polygon', coordinates: []}
+      }
+    ],
+    {fields}
+  ]);
+
   const geojsonLayers = findDefaultLayer(
     {
       fields,
       label: 'what',
       id: 'smoothie',
       fieldPairs: [],
-      allData: [
-        [
-          0,
-          1,
-          2,
-          3,
-          {
-            type: 'Feature',
-            properties: {index: 0},
-            geometry: {type: 'Point', coordinates: []}
-          },
-          {
-            type: 'Feature',
-            properties: {index: 0},
-            geometry: {type: 'Polygon', coordinates: []}
-          }
-        ]
-      ]
+      dataContainer
     },
     KeplerGlLayers
   );
@@ -641,8 +646,10 @@ test('layerUtils -> findDefaultLayer:GeojsonLayer.wkt', t => {
     strokeColor: strokeColor2
   });
 
+  const dataContainer = createDataContainer(rows, {fields});
+
   const geojsonLayers = findDefaultLayer(
-    {fields, id: dataId, label, fieldPairs: [], allData: rows},
+    {fields, id: dataId, label, fieldPairs: [], dataContainer},
     KeplerGlLayers
   );
 
@@ -653,6 +660,8 @@ test('layerUtils -> findDefaultLayer:GeojsonLayer.wkt', t => {
 test('layerUtils -> findDefaultLayer:GeojsonWithStyle', t => {
   const {fields, rows} = processGeojson(geoJsonWithStyle);
 
+  const dataContainer = createDataContainer(rows, {fields});
+
   const geojsonLayers = findDefaultLayer(
     {
       fields,
@@ -660,7 +669,7 @@ test('layerUtils -> findDefaultLayer:GeojsonWithStyle', t => {
       dataId: 'taro',
       label: 'chubby prince',
       fieldPairs: [],
-      allData: rows
+      dataContainer
     },
     KeplerGlLayers
   );

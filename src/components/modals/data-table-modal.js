@@ -111,14 +111,14 @@ function DataTableModalFactory(DataTable) {
       if (!datasets[dataId]) {
         return {};
       }
-      const {fields, allData} = datasets[dataId];
+      const {fields, dataContainer} = datasets[dataId];
 
       let showCalculate = null;
       if (!this.datasetCellSizeCache[dataId]) {
         showCalculate = true;
       } else if (
         this.datasetCellSizeCache[dataId].fields !== fields ||
-        this.datasetCellSizeCache[dataId].allData !== allData
+        this.datasetCellSizeCache[dataId].dataContainer !== dataContainer
       ) {
         showCalculate = true;
       }
@@ -132,7 +132,7 @@ function DataTableModalFactory(DataTable) {
           ...acc,
           [field.name]: renderedSize({
             text: {
-              rows: allData,
+              dataContainer,
               column: field.name
             },
             colIdx,
@@ -147,7 +147,7 @@ function DataTableModalFactory(DataTable) {
       this.datasetCellSizeCache[dataId] = {
         cellSizeCache,
         fields,
-        allData
+        dataContainer
       };
       return cellSizeCache;
     });
@@ -194,7 +194,7 @@ function DataTableModalFactory(DataTable) {
                 columns={columns}
                 colMeta={colMeta}
                 cellSizeCache={cellSizeCache}
-                rows={activeDataset.allData}
+                dataContainer={activeDataset.dataContainer}
                 pinnedColumns={activeDataset.pinnedColumns}
                 sortOrder={activeDataset.sortOrder}
                 sortColumn={activeDataset.sortColumn}
