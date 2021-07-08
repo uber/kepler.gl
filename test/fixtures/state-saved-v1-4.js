@@ -224,6 +224,8 @@ mergedLayer0.config = {
     {
       field: {
         name: 'name',
+        id: 'name',
+        displayName: 'name',
         type: 'string',
         format: '',
         fieldIdx: 7,

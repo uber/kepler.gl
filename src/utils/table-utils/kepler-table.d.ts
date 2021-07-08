@@ -7,11 +7,14 @@ export type Field = {
   analyzerType: string;
   id?: string;
   name: string;
+  displayName: string;
   format: string;
   type: string;
   fieldIdx: number;
   valueAccessor(v: any[]): any;
   filterProps?: any;
+  metadata?: any;
+  displayName: string;
 };
 
 export type GpuFilter = {
@@ -45,11 +48,7 @@ export type FilterDatasetOpt = {
   ignoreDomain?: boolean;
 };
 
-export function sortDatasetByColumn(
-  dataset: Dataset,
-  column: string,
-  mode?: string
-): Dataset;
+export function sortDatasetByColumn(dataset: Dataset, column: string, mode?: string): Dataset;
 
 export function findPointFieldPairs(fields: Feild[]): FieldPair[];
 

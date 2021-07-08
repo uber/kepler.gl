@@ -308,6 +308,8 @@ export function getFieldsFromData(data, fieldOrder) {
 
     return {
       name,
+      id: name,
+      displayName: name,
       format,
       fieldIdx: index,
       type: analyzerTypeToFieldType(type),
@@ -538,7 +540,7 @@ export function processGeojson(rawData) {
  * @returns {string} csv string
  */
 export function formatCsv(data, fields) {
-  const columns = fields.map(f => f.name);
+  const columns = fields.map(f => f.displayName || f.name);
   const formattedData = [columns];
 
   // parse geojson object as string

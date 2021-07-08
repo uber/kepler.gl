@@ -880,6 +880,8 @@ mergedLayer0.config = {
   highlightColor: [252, 242, 26, 255],
   colorField: {
     name: 'c_m_r',
+    id: 'c_m_r',
+    displayName: 'c_m_r',
     type: 'integer',
     format: '',
     fieldIdx: 8,
@@ -890,6 +892,8 @@ mergedLayer0.config = {
   colorDomain: [45, 9642],
   strokeColorField: {
     name: 'c_m_r',
+    id: 'c_m_r',
+    displayName: 'c_m_r',
     type: 'integer',
     format: '',
     fieldIdx: 8,
@@ -904,6 +908,8 @@ mergedLayer0.config = {
   textLabel: [DEFAULT_TEXT_LABEL],
   heightField: {
     name: 'c_a_v',
+    id: 'c_a_v',
+    displayName: 'c_a_v',
     type: 'real',
     format: '',
     fieldIdx: 10,
@@ -2706,6 +2712,8 @@ mergedLayer1.config = {
   strokeColorDomain: [0, 1],
   sizeField: {
     name: 'c_ta',
+    id: 'c_ta',
+    displayName: 'c_ta',
     type: 'real',
     fieldIdx: 12,
     format: '',

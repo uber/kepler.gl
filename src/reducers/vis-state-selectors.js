@@ -20,7 +20,7 @@
 
 import {createSelector} from 'reselect';
 
-// NOTE: default formats must match file-handler.js
+// NOTE: default formats must match file-handler-test.js
 const DEFAULT_FILE_EXTENSIONS = ['csv', 'json', 'geojson'];
 const DEFAULT_FILE_FORMATS = ['CSV', 'Json', 'GeoJSON'];
 

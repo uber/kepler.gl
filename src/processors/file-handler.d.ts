@@ -18,7 +18,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-import {ProtoDataset, AddDataToMapPayload} from 'actions/actions';
+import {AddDataToMapPayload} from 'actions/actions';
 
 export type FileCacheItem = {
   data: any;

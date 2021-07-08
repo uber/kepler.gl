@@ -71,6 +71,8 @@ class KeplerTable {
     const fields = data.fields.map((f, i) => ({
       ...f,
       fieldIdx: i,
+      id: f.name,
+      displayName: f.displayName || f.name,
       valueAccessor: maybeToDate.bind(
         null,
         // is time

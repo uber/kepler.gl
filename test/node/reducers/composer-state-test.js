@@ -40,23 +40,31 @@ const mockRawData = {
   fields: [
     {
       name: 'start_point_lat',
+      id: 'start_point_lat',
+      displayName: 'start_point_lat',
       type: 'real',
-      tableFieldIndex: 1
+      fieldIdx: 0
     },
     {
       name: 'start_point_lng',
+      id: 'start_point_lng',
+      displayName: 'start_point_lng',
       type: 'real',
-      tableFieldIndex: 3
+      fieldIdx: 2
     },
     {
       name: 'end_point_lat',
+      id: 'end_point_lat',
+      displayName: 'end_point_lat',
       type: 'real',
-      tableFieldIndex: 4
+      fieldIdx: 3
     },
     {
       name: 'end_point_lng',
+      id: 'end_point_lng',
+      displayName: 'end_point_lng',
       type: 'real',
-      tableFieldIndex: 2
+      fieldIdx: 4
     }
   ],
   rows: [

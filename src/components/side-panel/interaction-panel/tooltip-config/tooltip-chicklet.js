@@ -115,11 +115,14 @@ function TooltipChickletFactory(dataId, config, onChange, fields) {
     };
 
     render() {
-      const {disabled, name, remove} = this.props;
+      const {disabled, item, displayOption, remove} = this.props;
       const {show} = this.state;
       const tooltipField = config.fieldsToShow[dataId].find(
-        fieldToShow => fieldToShow.name === name
+        fieldToShow => fieldToShow.name === item.name
       );
+      if (!tooltipField) {
+        return null;
+      }
       const formatLabels = getFormatLabels(fields, tooltipField.name);
       const hasFormat = Boolean(tooltipField.format);
       const selectionIndex = formatLabels.findIndex(fl => getValue(fl) === tooltipField.format);
@@ -127,10 +130,10 @@ function TooltipChickletFactory(dataId, config, onChange, fields) {
 
       return (
         <ChickletButton ref={node => (this.node = node)}>
-          <ChickletTag>{name}</ChickletTag>
+          <ChickletTag>{displayOption(item)}</ChickletTag>
           {formatLabels.length > 1 && (
             <ChickletAddonWrapper>
-              <ChickletAddon data-tip data-for={`addon-${name}`}>
+              <ChickletAddon data-tip data-for={`addon-${tooltipField.name}`}>
                 <IconDiv status={hashStyle}>
                   <Hash
                     height="8px"
@@ -140,7 +143,7 @@ function TooltipChickletFactory(dataId, config, onChange, fields) {
                     }}
                   />
                 </IconDiv>
-                <Tooltip id={`addon-${name}`} effect="solid">
+                <Tooltip id={`addon-${tooltipField.name}`} effect="solid">
                   <span>
                     {hasFormat ? (
                       getFormatTooltip(formatLabels, tooltipField.format)
@@ -155,7 +158,7 @@ function TooltipChickletFactory(dataId, config, onChange, fields) {
                   <DropdownList
                     options={formatLabels}
                     selectionIndex={selectionIndex}
-                    displayOption={item => item.label}
+                    displayOption={({label}) => label}
                     onOptionSelected={(result, e) => {
                       e.stopPropagation();
                       this.setState({
@@ -164,9 +167,9 @@ function TooltipChickletFactory(dataId, config, onChange, fields) {
 
                       const oldFieldsToShow = config.fieldsToShow[dataId];
                       const fieldsToShow = oldFieldsToShow.map(fieldToShow => {
-                        return fieldToShow.name === name
+                        return fieldToShow.name === tooltipField.name
                           ? {
-                              name,
+                              name: tooltipField.name,
                               format: getValue(result)
                             }
                           : fieldToShow;

@@ -29,7 +29,8 @@ import {toArray} from 'utils/utils';
 import {notNullorUndefined} from 'utils/data-utils';
 import FieldTokenFactory from '../common/field-token';
 
-const defaultDisplayOption = d => d.name;
+const defaultDisplayOption = d => d.displayName || d.name;
+const defaultValueOption = d => d.name;
 
 const StyledToken = styled.div`
   display: inline-block;
@@ -128,8 +129,8 @@ function FieldSelectorFactory(FieldListItemFactory) {
           .map(d =>
             fields.find(f =>
               notNullorUndefined(d) && d.name
-                ? d.name === defaultDisplayOption(f)
-                : d === defaultDisplayOption(f)
+                ? d.name === defaultValueOption(f)
+                : d === defaultValueOption(f)
             )
           )
           .filter(d => d)
@@ -156,7 +157,7 @@ function FieldSelectorFactory(FieldListItemFactory) {
             getOptionValue={d => d}
             closeOnSelect={this.props.closeOnSelect}
             displayOption={defaultDisplayOption}
-            filterOption="name"
+            filterOption="displayName"
             fixedOptions={this.props.suggested}
             inputTheme={this.props.inputTheme}
             size={this.props.size}

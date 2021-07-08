@@ -184,6 +184,8 @@ export const mergedFilters = [
 const mergedFields = [
   {
     name: 'hex_id',
+    id: 'hex_id',
+    displayName: 'hex_id',
     format: '',
     fieldIdx: 0,
     type: 'string',
@@ -192,6 +194,8 @@ const mergedFields = [
   },
   {
     name: 'value',
+    id: 'value',
+    displayName: 'value',
     format: '',
     fieldIdx: 1,
     type: 'integer',
@@ -348,6 +352,8 @@ mergedH3Layer.config = {
   isConfigActive: false,
   colorField: {
     name: 'value',
+    id: 'value',
+    displayName: 'value',
     format: '',
     fieldIdx: 1,
     type: 'integer',

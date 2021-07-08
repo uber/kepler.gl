@@ -458,6 +458,8 @@ export const testFields = [
     type: 'timestamp',
     fieldIdx: 0,
     name: 'gps_data.utc_timestamp',
+    id: 'gps_data.utc_timestamp',
+    displayName: 'gps_data.utc_timestamp',
     format: 'YYYY-M-D H:m:s',
     analyzerType: 'DATETIME',
     valueAccessor: values => values[0]
@@ -466,6 +468,8 @@ export const testFields = [
     type: 'real',
     fieldIdx: 1,
     name: 'gps_data.lat',
+    id: 'gps_data.lat',
+    displayName: 'gps_data.lat',
     format: '',
     analyzerType: 'FLOAT',
     valueAccessor: values => values[1]
@@ -474,6 +478,8 @@ export const testFields = [
     type: 'real',
     fieldIdx: 2,
     name: 'gps_data.lng',
+    id: 'gps_data.lng',
+    displayName: 'gps_data.lng',
     format: '',
     analyzerType: 'FLOAT',
     valueAccessor: values => values[2]
@@ -482,6 +488,8 @@ export const testFields = [
     type: 'string',
     fieldIdx: 3,
     name: 'gps_data.types',
+    id: 'gps_data.types',
+    displayName: 'gps_data.types',
     format: '',
     analyzerType: 'STRING',
     valueAccessor: values => values[3]
@@ -490,6 +498,8 @@ export const testFields = [
     type: 'timestamp',
     fieldIdx: 4,
     name: 'epoch',
+    id: 'epoch',
+    displayName: 'epoch',
     format: 'X',
     analyzerType: 'TIME',
     valueAccessor: values => values[4]
@@ -498,6 +508,8 @@ export const testFields = [
     type: 'boolean',
     fieldIdx: 5,
     name: 'has_result',
+    id: 'has_result',
+    displayName: 'has_result',
     format: '',
     analyzerType: 'BOOLEAN',
     valueAccessor: values => values[5]
@@ -506,6 +518,8 @@ export const testFields = [
     type: 'integer',
     fieldIdx: 6,
     name: 'id',
+    id: 'id',
+    displayName: 'id',
     format: '',
     analyzerType: 'INT',
     valueAccessor: values => values[6]
@@ -514,6 +528,8 @@ export const testFields = [
     type: 'timestamp',
     fieldIdx: 7,
     name: 'time',
+    id: 'time',
+    displayName: 'time',
     format: 'YYYY-M-DTHH:mm:ss.SSSS',
     analyzerType: 'DATETIME',
     valueAccessor: values => values[7]
@@ -522,6 +538,8 @@ export const testFields = [
     type: 'timestamp',
     fieldIdx: 8,
     name: 'begintrip_ts_utc',
+    id: 'begintrip_ts_utc',
+    displayName: 'begintrip_ts_utc',
     format: 'YYYY-M-D HH:mm:ssZZ',
     analyzerType: 'DATETIME',
     valueAccessor: values => values[8]
@@ -530,6 +548,8 @@ export const testFields = [
     type: 'timestamp',
     fieldIdx: 9,
     name: 'begintrip_ts_local',
+    id: 'begintrip_ts_local',
+    displayName: 'begintrip_ts_local',
     format: 'YYYY-M-D HH:mm:ssZZ',
     analyzerType: 'DATETIME',
     valueAccessor: values => values[9]
@@ -538,6 +558,8 @@ export const testFields = [
     type: 'date',
     fieldIdx: 10,
     name: 'date',
+    id: 'date',
+    displayName: 'date',
     format: 'YYYY-M-D',
     analyzerType: 'DATE',
     valueAccessor: values => values[10]
@@ -882,6 +904,8 @@ export const wktCsvFields = [
   {
     type: 'integer',
     name: 'a_zip',
+    id: 'a_zip',
+    displayName: 'a_zip',
     format: '',
     fieldIdx: 0,
     analyzerType: 'INT',
@@ -890,6 +914,8 @@ export const wktCsvFields = [
   {
     type: 'geojson',
     name: 'simplified_shape_v2',
+    id: 'simplified_shape_v2',
+    displayName: 'simplified_shape_v2',
     format: '',
     fieldIdx: 1,
     analyzerType: 'PAIR_GEOMETRY_FROM_STRING',
@@ -898,6 +924,8 @@ export const wktCsvFields = [
   {
     type: 'geojson',
     name: 'simplified_shape',
+    id: 'simplified_shape',
+    displayName: 'simplified_shape',
     format: '',
     fieldIdx: 2,
     analyzerType: 'GEOMETRY_FROM_STRING',
@@ -906,6 +934,8 @@ export const wktCsvFields = [
   {
     type: 'real',
     name: 'm_rate',
+    id: 'm_rate',
+    displayName: 'm_rate',
     format: '',
     fieldIdx: 3,
     analyzerType: 'FLOAT',
@@ -914,6 +944,8 @@ export const wktCsvFields = [
   {
     type: 'string',
     name: 'c_zip_type',
+    id: 'c_zip_type',
+    displayName: 'c_zip_type',
     format: '',
     fieldIdx: 4,
     analyzerType: 'STRING',
@@ -922,6 +954,8 @@ export const wktCsvFields = [
   {
     type: 'real',
     name: 'c_number',
+    id: 'c_number',
+    displayName: 'c_number',
     format: '',
     fieldIdx: 5,
     analyzerType: 'FLOAT',

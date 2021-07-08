@@ -23,6 +23,8 @@ const data = `[{"bedrooms": "Null", "bathrooms": "N/A", "effectiveyearbuilt": "N
 export const parsedFields = [
   {
     name: 'bedrooms',
+    id: 'bedrooms',
+    displayName: 'bedrooms',
     format: '',
     fieldIdx: 0,
     type: 'integer',
@@ -31,6 +33,8 @@ export const parsedFields = [
   },
   {
     name: 'bathrooms',
+    id: 'bathrooms',
+    displayName: 'bathrooms',
     format: '',
     fieldIdx: 1,
     type: 'integer',
@@ -39,6 +43,8 @@ export const parsedFields = [
   },
   {
     name: 'effectiveyearbuilt',
+    id: 'effectiveyearbuilt',
+    displayName: 'effectiveyearbuilt',
     format: '',
     fieldIdx: 2,
     type: 'integer',
@@ -47,6 +53,8 @@ export const parsedFields = [
   },
   {
     name: 'roll_landbaseyear',
+    id: 'roll_landbaseyear',
+    displayName: 'roll_landbaseyear',
     format: '',
     fieldIdx: 3,
     type: 'integer',
@@ -55,6 +63,8 @@ export const parsedFields = [
   },
   {
     name: 'roll_totlandimp',
+    id: 'roll_totlandimp',
+    displayName: 'roll_totlandimp',
     format: '',
     fieldIdx: 4,
     type: 'integer',
@@ -63,6 +73,8 @@ export const parsedFields = [
   },
   {
     name: 'nettaxablevalue',
+    id: 'nettaxablevalue',
+    displayName: 'nettaxablevalue',
     format: '',
     fieldIdx: 5,
     type: 'integer',
@@ -71,6 +83,8 @@ export const parsedFields = [
   },
   {
     name: 'center_lon',
+    id: 'center_lon',
+    displayName: 'center_lon',
     format: '',
     fieldIdx: 6,
     type: 'real',
@@ -79,6 +93,8 @@ export const parsedFields = [
   },
   {
     name: 'roll_landvalue',
+    id: 'roll_landvalue',
+    displayName: 'roll_landvalue',
     format: '',
     fieldIdx: 7,
     type: 'integer',
@@ -87,6 +103,8 @@ export const parsedFields = [
   },
   {
     name: 'usecodedescchar1',
+    id: 'usecodedescchar1',
+    displayName: 'usecodedescchar1',
     format: '',
     fieldIdx: 8,
     type: 'string',
@@ -95,6 +113,8 @@ export const parsedFields = [
   },
   {
     name: 'usetype',
+    id: 'usetype',
+    displayName: 'usetype',
     format: '',
     fieldIdx: 9,
     type: 'string',
@@ -103,6 +123,8 @@ export const parsedFields = [
   },
   {
     name: 'yearbuiltTS',
+    id: 'yearbuiltTS',
+    displayName: 'yearbuiltTS',
     format: 'X',
     fieldIdx: 10,
     type: 'timestamp',
@@ -111,6 +133,8 @@ export const parsedFields = [
   },
   {
     name: 'yearbuilt',
+    id: 'yearbuilt',
+    displayName: 'yearbuilt',
     format: '',
     fieldIdx: 11,
     type: 'integer',
@@ -119,6 +143,8 @@ export const parsedFields = [
   },
   {
     name: 'roll_impvalue',
+    id: 'roll_impvalue',
+    displayName: 'roll_impvalue',
     format: '',
     fieldIdx: 12,
     type: 'integer',
@@ -127,6 +153,8 @@ export const parsedFields = [
   },
   {
     name: 'istaxableparcel',
+    id: 'istaxableparcel',
+    displayName: 'istaxableparcel',
     format: '',
     fieldIdx: 13,
     type: 'boolean',
@@ -135,6 +163,8 @@ export const parsedFields = [
   },
   {
     name: 'propertylocation',
+    id: 'propertylocation',
+    displayName: 'propertylocation',
     format: '',
     fieldIdx: 14,
     type: 'string',
@@ -143,6 +173,8 @@ export const parsedFields = [
   },
   {
     name: 'units',
+    id: 'units',
+    displayName: 'units',
     format: '',
     fieldIdx: 15,
     type: 'integer',
@@ -151,6 +183,8 @@ export const parsedFields = [
   },
   {
     name: 'sqftmain',
+    id: 'sqftmain',
+    displayName: 'sqftmain',
     format: '',
     fieldIdx: 16,
     type: 'integer',
@@ -159,6 +193,8 @@ export const parsedFields = [
   },
   {
     name: 'roll_totalvalue',
+    id: 'roll_totalvalue',
+    displayName: 'roll_totalvalue',
     format: '',
     fieldIdx: 17,
     type: 'integer',
@@ -167,6 +203,8 @@ export const parsedFields = [
   },
   {
     name: 'situszip5',
+    id: 'situszip5',
+    displayName: 'situszip5',
     format: '',
     fieldIdx: 18,
     type: 'integer',
@@ -175,6 +213,8 @@ export const parsedFields = [
   },
   {
     name: 'center_lat',
+    id: 'center_lat',
+    displayName: 'center_lat',
     format: '',
     fieldIdx: 19,
     type: 'real',

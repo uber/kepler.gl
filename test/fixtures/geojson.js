@@ -209,6 +209,8 @@ export const fields = [
   {
     type: 'geojson',
     name: '_geojson',
+    id: '_geojson',
+    displayName: '_geojson',
     format: '',
     fieldIdx: 0,
     analyzerType: 'GEOMETRY',
@@ -217,6 +219,8 @@ export const fields = [
   {
     type: 'integer',
     name: 'OBJECTID',
+    id: 'OBJECTID',
+    displayName: 'OBJECTID',
     format: '',
     fieldIdx: 1,
     analyzerType: 'INT',
@@ -225,6 +229,8 @@ export const fields = [
   {
     type: 'integer',
     name: 'ZIP_CODE',
+    id: 'ZIP_CODE',
+    displayName: 'ZIP_CODE',
     format: '',
     fieldIdx: 2,
     analyzerType: 'INT',
@@ -233,6 +239,8 @@ export const fields = [
   {
     type: 'integer',
     name: 'ID',
+    id: 'ID',
+    displayName: 'ID',
     format: '',
     fieldIdx: 3,
     analyzerType: 'INT',
@@ -241,6 +249,8 @@ export const fields = [
   {
     type: 'integer',
     name: 'TRIPS',
+    id: 'TRIPS',
+    displayName: 'TRIPS',
     format: '',
     fieldIdx: 4,
     analyzerType: 'INT',
@@ -249,6 +259,8 @@ export const fields = [
   {
     type: 'string',
     name: 'RATE',
+    id: 'RATE',
+    displayName: 'RATE',
     format: '',
     fieldIdx: 5,
     analyzerType: 'STRING',
@@ -257,6 +269,8 @@ export const fields = [
   {
     type: 'geojson',
     name: 'OBJ',
+    id: 'OBJ',
+    displayName: 'OBJ',
     format: '',
     fieldIdx: 6,
     analyzerType: 'OBJECT',
@@ -529,6 +543,8 @@ export const geoJsonWithStyle = {
 export const geoStyleFields = [
   {
     name: '_geojson',
+    id: '_geojson',
+    displayName: '_geojson',
     format: '',
     fieldIdx: 0,
     type: 'geojson',
@@ -537,6 +553,8 @@ export const geoStyleFields = [
   },
   {
     name: 'fillColor',
+    id: 'fillColor',
+    displayName: 'fillColor',
     format: '',
     fieldIdx: 1,
     type: 'geojson',
@@ -545,6 +563,8 @@ export const geoStyleFields = [
   },
   {
     name: 'lineColor',
+    id: 'lineColor',
+    displayName: 'lineColor',
     format: '',
     fieldIdx: 2,
     type: 'geojson',
@@ -553,6 +573,8 @@ export const geoStyleFields = [
   },
   {
     name: 'lineWidth',
+    id: 'lineWidth',
+    displayName: 'lineWidth',
     format: '',
     fieldIdx: 3,
     type: 'integer',
@@ -561,6 +583,8 @@ export const geoStyleFields = [
   },
   {
     name: 'elevation',
+    id: 'elevation',
+    displayName: 'elevation',
     format: '',
     fieldIdx: 4,
     type: 'integer',
@@ -569,6 +593,8 @@ export const geoStyleFields = [
   },
   {
     name: 'radius',
+    id: 'radius',
+    displayName: 'radius',
     format: '',
     fieldIdx: 5,
     type: 'integer',

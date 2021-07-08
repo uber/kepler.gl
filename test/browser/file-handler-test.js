@@ -46,8 +46,16 @@ global.FileReader = global.window.FileReader;
 global.Blob = global.window.Blob;
 
 test('#file-handler -> readFileInBatches.csv -> processFileData', async t => {
-  const cseFile = new File([dataWithNulls], 'text-data.csv', {type: 'text/csv'});
-  const gen = await readFileInBatches({file: cseFile, fileCache: []});
+  const csvFile = new File([dataWithNulls], 'text-data.csv', {type: 'text/csv'});
+
+  let gen = null;
+  try {
+    gen = await readFileInBatches({file: csvFile, fileList: []});
+  } catch (e) {
+    t.equal(true, false, 'Should read file correctly');
+    t.end();
+    return;
+  }
 
   // metadata batch
   const batch1 = await gen.next();
@@ -66,7 +74,7 @@ test('#file-handler -> readFileInBatches.csv -> processFileData', async t => {
   t.deepEqual(
     Object.keys(batch1.value).sort(),
     Object.keys(expected1.value).sort(),
-    'value should have same keyss'
+    'value should have same keys'
   );
 
   t.equal(batch1.value.batchType, expected1.value.batchType, 'batch1.batchType should be the same');
@@ -111,7 +119,7 @@ test('#file-handler -> readFileInBatches.csv -> processFileData', async t => {
   t.deepEqual(
     Object.keys(batch2.value).sort(),
     Object.keys(expected2.value).sort(),
-    'value should have same keyss'
+    'value should have same keys'
   );
 
   t.equal(batch2.value.fileName, expected2.value.fileName, 'batch2.fileName should be the same');
@@ -151,7 +159,15 @@ test('#file-handler -> readFileInBatches.csv -> processFileData', async t => {
 
 test('#file-handler -> readFileInBatches.GeoJSON FeatureCollection -> processFileData', async t => {
   const geojsonFile = new File([geojsonString], 'text-data-1.geojson', {type: ''});
-  const gen = await readFileInBatches({file: geojsonFile, fileCache: []});
+
+  let gen = null;
+  try {
+    gen = await readFileInBatches({file: geojsonFile, fileList: []});
+  } catch (e) {
+    t.equal(true, false, 'Should read file correctly');
+    t.end();
+    return;
+  }
 
   // metadata batch
   const batch1 = await gen.next();
@@ -171,7 +187,7 @@ test('#file-handler -> readFileInBatches.GeoJSON FeatureCollection -> processFil
   t.deepEqual(
     Object.keys(batch1.value).sort(),
     Object.keys(expected1.value).sort(),
-    'value should have same keyss'
+    'value should have same keys'
   );
 
   t.equal(batch1.value.batchType, expected1.value.batchType, 'batch1.batchType should be the same');
@@ -274,7 +290,14 @@ test('#file-handler -> readFileInBatches.GeoJSON FeatureCollection -> processFil
 
 test('#file-handler -> readFileInBatches.GeoJSON Single Feature -> processFileData', async t => {
   const geojsonFile = new File([featureString], 'text-data-1.geojson', {type: ''});
-  const gen = await readFileInBatches({file: geojsonFile, fileCache: []});
+  let gen = null;
+  try {
+    gen = await readFileInBatches({file: geojsonFile, fileList: []});
+  } catch (e) {
+    t.equal(true, false, 'Should read file correctly');
+    t.end();
+    return;
+  }
 
   // metadata batch
   const batch1 = await gen.next();
@@ -294,7 +317,7 @@ test('#file-handler -> readFileInBatches.GeoJSON Single Feature -> processFileDa
   t.deepEqual(
     Object.keys(batch1.value).sort(),
     Object.keys(expected1.value).sort(),
-    'value should have same keyss'
+    'value should have same keys'
   );
 
   t.equal(batch1.value.batchType, expected1.value.batchType, 'batch1.batchType should be the same');
@@ -370,7 +393,15 @@ test('#file-handler -> readFileInBatches.GeoJSON Single Feature -> processFileDa
 test('#file-handler -> readFileInBatches.row -> processFileData', async t => {
   const fileName = 'row-data.json';
   const rowFile = new File([rowDataString], fileName, {type: ''});
-  const gen = await readFileInBatches({file: rowFile, fileCache: []});
+
+  let gen = null;
+  try {
+    gen = await readFileInBatches({file: rowFile, fileList: []});
+  } catch (e) {
+    t.equal(true, false, 'Should read file correctly');
+    t.end();
+    return;
+  }
 
   // metadata batch
   const batch1 = await gen.next();
@@ -389,7 +420,7 @@ test('#file-handler -> readFileInBatches.row -> processFileData', async t => {
   t.deepEqual(
     Object.keys(batch1.value).sort(),
     Object.keys(expected1.value).sort(),
-    'value should have same keyss'
+    'value should have same keys'
   );
 
   t.equal(batch1.value.batchType, expected1.value.batchType, 'batch1.batchType should be the same');
@@ -494,7 +525,15 @@ test('#file-handler -> readFileInBatches.row -> processFileData', async t => {
 test('#file-handler -> readFileInBatches.keplerMap -> processFileData', async t => {
   const fileName = 'keplergl.json';
   const keplerGlMap = new File([JSON.stringify(keplerglMap)], fileName, {type: ''});
-  const gen = await readFileInBatches({file: keplerGlMap, fileCache: []});
+
+  let gen = null;
+  try {
+    gen = await readFileInBatches({file: keplerGlMap, fileList: []});
+  } catch (e) {
+    t.equal(true, false, 'Should read file correctly');
+    t.end();
+    return;
+  }
 
   // metadata batch
   const batch1 = await gen.next();
@@ -513,7 +552,7 @@ test('#file-handler -> readFileInBatches.keplerMap -> processFileData', async t 
   t.deepEqual(
     Object.keys(batch1.value).sort(),
     Object.keys(expected1.value).sort(),
-    'value should have same keyss'
+    'value should have same keys'
   );
 
   t.equal(batch1.value.batchType, expected1.value.batchType, 'batch1.batchType should be the same');
