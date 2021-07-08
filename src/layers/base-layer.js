@@ -848,12 +848,12 @@ class Layer {
     this.meta = {...this.meta, ...meta};
   }
 
-  getDataUpdateTriggers({filteredIndex, id}) {
+  getDataUpdateTriggers({filteredIndex, id, allData}) {
     const {columns} = this.config;
 
     return {
-      getData: {datasetId: id, columns, filteredIndex},
-      getMeta: {datasetId: id, columns},
+      getData: {datasetId: id, allData, columns, filteredIndex},
+      getMeta: {datasetId: id, allData, columns},
       ...(this.config.textLabel || []).reduce(
         (accu, tl, i) => ({
           ...accu,
