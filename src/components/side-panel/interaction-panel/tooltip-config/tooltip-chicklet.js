@@ -158,7 +158,7 @@ function TooltipChickletFactory(dataId, config, onChange, fields) {
                   <DropdownList
                     options={formatLabels}
                     selectionIndex={selectionIndex}
-                    displayOption={item => item.label}
+                    displayOption={({label}) => label}
                     onOptionSelected={(result, e) => {
                       e.stopPropagation();
                       this.setState({

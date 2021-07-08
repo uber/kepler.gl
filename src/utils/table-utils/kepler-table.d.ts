@@ -7,6 +7,7 @@ export type Field = {
   analyzerType: string;
   id?: string;
   name: string;
+  displayName: string;
   format: string;
   type: string;
   fieldIdx: number;
@@ -45,11 +46,7 @@ export type FilterDatasetOpt = {
   ignoreDomain?: boolean;
 };
 
-export function sortDatasetByColumn(
-  dataset: Dataset,
-  column: string,
-  mode?: string
-): Dataset;
+export function sortDatasetByColumn(dataset: Dataset, column: string, mode?: string): Dataset;
 
 export function findPointFieldPairs(fields: Feild[]): FieldPair[];
 
