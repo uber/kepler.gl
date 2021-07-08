@@ -49,6 +49,8 @@ import {
 } from 'constants/default-settings';
 import {OVERLAY_TYPE} from 'layers/base-layer';
 
+import ErrorBoundary from 'components/common/error-boundary';
+
 /** @type {{[key: string]: React.CSSProperties}} */
 const MAP_STYLE = {
   container: {
@@ -293,16 +295,11 @@ export default function MapContainerFactory(MapPopover, MapControl, Editor) {
         mousePos: {mousePosition, coordinate, pinned}
       } = this.props;
 
-      if (!mousePosition) {
+      if (!mousePosition || !interactionConfig.tooltip) {
         return null;
       }
-      // if clicked something, ignore hover behavior
-      let layerHoverProp = null;
-      let layerPinnedProp = null;
-      const position = {x: mousePosition[0], y: mousePosition[1]};
-      let pinnedPosition = {};
 
-      layerHoverProp = getLayerHoverProp({
+      const layerHoverProp = getLayerHoverProp({
         interactionConfig,
         hoverInfo,
         layers,
@@ -314,10 +311,9 @@ export default function MapContainerFactory(MapPopover, MapControl, Editor) {
         ? interactionConfig.tooltip.config.compareMode
         : false;
 
-      const hasTooltip = pinned || clicked;
-      const hasComparisonTooltip = compareMode || (!clicked && !pinned);
-
-      if (hasTooltip) {
+      let pinnedPosition = {};
+      let layerPinnedProp = null;
+      if (pinned || clicked) {
         // project lnglat to screen so that tooltip follows the object on zoom
         const viewport = new WebMercatorViewport(mapState);
         const lngLat = clicked ? clicked.lngLat : pinned.coordinate;
@@ -334,34 +330,38 @@ export default function MapContainerFactory(MapPopover, MapControl, Editor) {
           layerHoverProp.compareType = interactionConfig.tooltip.config.compareType;
         }
       }
+
       const commonProp = {
         onClose: this._onCloseMapPopover,
         mapW: mapState.width,
         mapH: mapState.height,
-        zoom: mapState.zoom
+        zoom: mapState.zoom,
+        container: this._deck ? this._deck.canvas : undefined
       };
 
       return (
-        <div>
-          {hasTooltip && (
+        <ErrorBoundary>
+          {layerPinnedProp && (
             <MapPopover
               {...pinnedPosition}
               {...commonProp}
               layerHoverProp={layerPinnedProp}
               coordinate={interactionConfig.coordinate.enabled && (pinned || {}).coordinate}
-              frozen={Boolean(hasTooltip)}
+              frozen={true}
               isBase={compareMode}
             />
           )}
-          {hasComparisonTooltip && (
+          {layerHoverProp && (!layerPinnedProp || compareMode) && (
             <MapPopover
-              {...position}
+              x={mousePosition[0]}
+              y={mousePosition[1]}
               {...commonProp}
               layerHoverProp={layerHoverProp}
+              frozen={false}
               coordinate={interactionConfig.coordinate.enabled && coordinate}
             />
           )}
-        </div>
+        </ErrorBoundary>
       );
     }
 

@@ -113,6 +113,7 @@ function mockCanvas(globalWindow) {
 global.window = window;
 global.document = window.document;
 global.HTMLElement = window.HTMLElement;
+global.Element = window.Element;
 global.fetch = window.fetch;
 
 Object.keys(global.window).forEach(property => {

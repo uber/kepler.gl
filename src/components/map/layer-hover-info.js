@@ -31,8 +31,6 @@ export const StyledLayerName = styled(CenterFlexbox)`
   font-size: 12px;
   letter-spacing: 0.43px;
   text-transform: capitalize;
-  padding: 0 14px;
-  margin-top: 12px;
 
   svg {
     margin-right: 4px;

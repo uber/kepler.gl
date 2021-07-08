@@ -1,3 +1,4 @@
+import React from 'react';
 import {FunctionComponent} from 'react';
 import {IntlShape} from 'react-intl';
 import {LayerHoverProp} from '../../utils/layer-utils';
@@ -12,6 +13,7 @@ export type MapPopoverProps = {
   layerHoverProp: LayerHoverProp | null;
   isBase?: boolean;
   zoom: number;
+  container?: HTMLElement | null;
   onClose: () => void;
 };
 

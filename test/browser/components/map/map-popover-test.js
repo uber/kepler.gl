@@ -21,11 +21,10 @@
 import React from 'react';
 import sinon from 'sinon';
 import test from 'tape';
-import {renderHook} from '@testing-library/react-hooks';
 
 import {Pin} from 'components/common/icons';
 import {IntlWrapper, mountWithTheme} from 'test/helpers/component-utils';
-import MapPopoverFactory, {usePosition} from 'components/map/map-popover';
+import MapPopoverFactory from 'components/map/map-popover';
 import {appInjector} from 'components';
 
 const MapPopover = appInjector.get(MapPopoverFactory);
@@ -54,45 +53,6 @@ test('Map Popover - render', t => {
   t.equal(wrapper.find('.map-popover__layer-info').length, 0, 'Should display 0 layer info');
   t.equal(wrapper.find(Pin).length, 1, 'Should display 1 pin');
   t.equal(wrapper.find('.primary-label').length, 1, 'Should display 1 primary label');
-
-  t.end();
-});
-
-test('Map Popover -> renderHooks', t => {
-  const wrapper = ({children}) => <IntlWrapper>{children}</IntlWrapper>;
-  const ref = {
-    current: {
-      offsetWidth: 50,
-      offsetHeight: 50
-    }
-  };
-  const layerHoverProp = {data: [1]};
-
-  const {result} = renderHook(
-    () =>
-      usePosition(
-        {
-          x: 100,
-          y: 200,
-          mapW: 600,
-          mapH: 800,
-          layerHoverProp
-        },
-        ref
-      ),
-    {
-      wrapper
-    }
-  );
-
-  t.deepEqual(
-    result.current.pos,
-    {
-      left: 120,
-      top: 220
-    },
-    'should calculate correct pos'
-  );
 
   t.end();
 });

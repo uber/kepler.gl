@@ -18,26 +18,34 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-import React, {useState, useCallback, useRef, useLayoutEffect} from 'react';
+import React, {useState} from 'react';
 import styled from 'styled-components';
 import LayerHoverInfoFactory from './layer-hover-info';
 import CoordinateInfoFactory from './coordinate-info';
-import {Pin, ArrowLeft, ArrowRight} from 'components/common/icons';
-import ErrorBoundary from 'components/common/error-boundary';
+import {ArrowLeft, ArrowRight, Pin} from 'components/common/icons';
 import {injectIntl} from 'react-intl';
 import {FormattedMessage} from 'localization';
+import Tippy from '@tippyjs/react/headless';
 
 const MAX_WIDTH = 500;
 const MAX_HEIGHT = 600;
 
 const StyledMapPopover = styled.div`
+  display: flex;
+  flex-direction: column;
+  max-width: ${MAX_WIDTH}px;
+  max-height: ${MAX_HEIGHT}px;
+  padding: 14px;
+  & > * + * {
+    margin-top: 6px;
+  }
   ${props => props.theme.scrollBar};
+  font-family: ${props => props.theme.fontFamily};
   font-size: 11px;
   font-weight: 500;
   background-color: ${props => props.theme.panelBackground};
   color: ${props => props.theme.textColor};
   z-index: 1000;
-  position: absolute;
   overflow-x: auto;
   box-shadow: ${props => props.theme.panelBoxShadow};
 
@@ -45,57 +53,73 @@ const StyledMapPopover = styled.div`
     background-color: ${props => `${props.theme.panelBackground}dd`};
   }
 
-  .gutter {
-    height: 6px;
-    margin-bottom: 20px;
-  }
-
   .primary-label {
     color: ${props => props.theme.notificationColors.success};
-    position: absolute;
-    right: 18px;
-    top: 10px;
     font-size: 10px;
   }
 
+  .map-popover__layer-info,
+  .coordingate-hover-info {
+    & > * + * {
+      margin-top: 7px;
+    }
+  }
+
   table {
-    margin: 2px 12px 12px 12px;
     width: auto;
+    display: grid;
+    border-collapse: collapse;
+    row-gap: 5px;
+    column-gap: 5px;
+  }
 
-    tbody {
-      border-top: transparent;
-      border-bottom: transparent;
-    }
+  .coordingate-hover-info > table {
+    grid-template-columns: auto auto auto;
+  }
+  .map-popover__layer-info > table {
+    grid-template-columns: auto auto;
+  }
 
-    td {
-      border-color: transparent;
-      padding: 4px;
-      color: ${props => props.theme.textColor};
-    }
+  tbody,
+  tr {
+    display: contents;
+  }
 
-    td.row__value {
-      text-align: right;
-      font-weight: 500;
-      color: ${props => props.theme.textColorHl};
-    }
+  td {
+    border-color: transparent;
+    color: ${props => props.theme.textColor};
+  }
+
+  td.row__value {
+    text-align: right;
+    font-weight: 500;
+    color: ${props => props.theme.textColorHl};
+  }
+`;
+
+const PinnedButtons = styled.div`
+  display: flex;
+  align-self: center;
+  align-items: center;
+  justify-items: center;
+  & > * + * {
+    margin-left: 10px;
+  }
+`;
+
+const PopoverContent = styled.div`
+  display: flex;
+  flex-direction: column;
+  & > * + * {
+    margin-top: 12px;
   }
 `;
 
 const StyledIcon = styled.div`
-  position: absolute;
-  left: 50%;
-  transform: rotate(30deg);
-  top: 10px;
   color: ${props => props.theme.activeColor};
 
-  &.popover-arrow-left {
-    left: 40%;
-    transform: rotate(0deg);
-  }
-
-  &.popover-arrow-right {
-    left: 60%;
-    transform: rotate(0deg);
+  &.popover-pin {
+    transform: rotate(30deg);
   }
 
   :hover {
@@ -106,80 +130,47 @@ const StyledIcon = styled.div`
 
 MapPopoverFactory.deps = [LayerHoverInfoFactory, CoordinateInfoFactory];
 
-export function getPosition({x, y, mapW, mapH, width, height, isLeft}) {
-  const topOffset = 20;
-  const leftOffset = 20;
-  if (![x, y, mapW, mapH, width, height].every(Number.isFinite)) {
-    return {};
-  }
-
-  const pos = {};
-  if (x + leftOffset + width > mapW || isLeft) {
-    pos.right = mapW - x + leftOffset;
-  } else {
-    pos.left = x + leftOffset;
-  }
-
-  if (y + topOffset + height > mapH) {
-    pos.bottom = 10;
-  } else {
-    pos.top = y + topOffset;
-  }
-
-  return pos;
+function createVirtualReference(container, x, y, size = 0) {
+  const bounds =
+    container && container.getBoundingClientRect ? container.getBoundingClientRect() : {};
+  const left = (bounds.left || 0) + x - size / 2;
+  const top = (bounds.top || 0) + y - size / 2;
+  return {
+    left,
+    top,
+    right: left + size,
+    bottom: top + size,
+    width: size,
+    height: size
+  };
 }
 
-function hasPosChanged({oldPos = {}, newPos = {}}) {
-  for (const key in newPos) {
-    if (oldPos[key] !== newPos[key]) {
-      return true;
-    }
+function getOffsetForPlacement({placement, reference, popper}, gap = 20) {
+  switch (placement) {
+    case 'top-start':
+    case 'bottom-start':
+      return [gap, gap];
+    case 'top-end':
+    case 'bottom-end':
+      return [-gap, gap];
+    default:
+      return [0, 0];
   }
-  for (const key in oldPos) {
-    if (oldPos[key] !== newPos[key]) {
-      return true;
-    }
-  }
-  return false;
 }
 
-// hooks
-export function usePosition({layerHoverProp, x, y, mapW, mapH}, popover) {
-  const [isLeft, setIsLeft] = useState(false);
-  const [pos, setPosition] = useState({});
-
-  const moveLeft = useCallback(() => setIsLeft(true), [setIsLeft]);
-  const moveRight = useCallback(() => setIsLeft(false), [setIsLeft]);
-  const hoverData = layerHoverProp && layerHoverProp.data;
-
-  useLayoutEffect(() => {
-    const node = popover.current;
-
-    if (!node || !hoverData) {
-      return;
-    }
-
-    const width = Math.round(node.offsetWidth);
-    const height = Math.round(node.offsetHeight);
-
-    if (Number.isFinite(width) && width > 0 && Number.isFinite(height) && height > 0) {
-      const newPos = getPosition({
-        x,
-        y,
-        mapW,
-        mapH,
-        width,
-        height,
-        isLeft
-      });
-      if (hasPosChanged({oldPos: pos, newPos})) {
-        setPosition(newPos);
+function getPopperOptions(container) {
+  return {
+    modifiers: [
+      {
+        name: 'preventOverflow',
+        options: {
+          boundary: container
+        }
       }
-    }
-  }, [x, y, mapH, mapW, isLeft, hoverData, pos, popover]);
-
-  return {moveLeft, moveRight, isLeft, pos};
+    ]
+  };
 }
+
 export default function MapPopoverFactory(LayerHoverInfo, CoordinateInfo) {
   /** @type {typeof import('./map-popover').MapPopover} */
   const MapPopover = ({
@@ -192,54 +183,56 @@ export default function MapPopoverFactory(LayerHoverInfo, CoordinateInfo) {
     layerHoverProp,
     isBase,
     zoom,
+    container,
     onClose
   }) => {
-    const popover = useRef(null);
-    const {moveLeft, moveRight, isLeft, pos} = usePosition(
-      {layerHoverProp, x, y, mapW, mapH},
-      popover
-    );
-
+    const [horizontalPlacement, setHorizontalPlacement] = useState('start');
+    const moveLeft = () => setHorizontalPlacement('end');
+    const moveRight = () => setHorizontalPlacement('start');
     return (
-      <ErrorBoundary>
-        <StyledMapPopover
-          ref={popover}
-          className="map-popover"
-          style={{
-            ...pos,
-            maxWidth: MAX_WIDTH,
-            maxHeight: MAX_HEIGHT
-          }}
-        >
-          {frozen ? (
-            <div className="map-popover__top">
-              <div className="gutter" />
-              {!isLeft && (
-                <StyledIcon className="popover-arrow-left" onClick={moveLeft}>
-                  <ArrowLeft />
+      <Tippy
+        popperOptions={getPopperOptions(container)}
+        zIndex={999} /* should be below Modal which has zIndex=1000 */
+        visible={true}
+        interactive={true}
+        getReferenceClientRect={() => createVirtualReference(container, x, y)}
+        // @ts-ignore
+        placement={`bottom-${horizontalPlacement}`}
+        // @ts-ignore
+        offset={getOffsetForPlacement}
+        appendTo={document.body}
+        render={attrs => (
+          <StyledMapPopover {...attrs} className="map-popover">
+            {frozen ? (
+              <PinnedButtons>
+                {horizontalPlacement === 'start' && (
+                  <StyledIcon className="popover-arrow-left" onClick={moveLeft}>
+                    <ArrowLeft />
+                  </StyledIcon>
+                )}
+                <StyledIcon className="popover-pin" onClick={onClose}>
+                  <Pin height="16px" />
                 </StyledIcon>
-              )}
-              <StyledIcon className="popover-pin" onClick={onClose}>
-                <Pin height="16px" />
-              </StyledIcon>
-              {isLeft && (
-                <StyledIcon className="popover-arrow-right" onClick={moveRight}>
-                  <ArrowRight />
-                </StyledIcon>
-              )}
-              {isBase && (
-                <div className="primary-label">
-                  <FormattedMessage id="mapPopover.primary" />
-                </div>
-              )}
-            </div>
-          ) : null}
-          {Array.isArray(coordinate) && <CoordinateInfo coordinate={coordinate} zoom={zoom} />}
-          {layerHoverProp && <LayerHoverInfo {...layerHoverProp} />}
-        </StyledMapPopover>
-      </ErrorBoundary>
+                {horizontalPlacement === 'end' && (
+                  <StyledIcon className="popover-arrow-right" onClick={moveRight}>
+                    <ArrowRight />
+                  </StyledIcon>
+                )}
+                {isBase && (
+                  <div className="primary-label">
+                    <FormattedMessage id="mapPopover.primary" />
+                  </div>
+                )}
+              </PinnedButtons>
+            ) : null}
+            <PopoverContent>
+              {Array.isArray(coordinate) && <CoordinateInfo coordinate={coordinate} zoom={zoom} />}
+              {layerHoverProp && <LayerHoverInfo {...layerHoverProp} />}
+            </PopoverContent>
+          </StyledMapPopover>
+        )}
+      />
     );
   };
-
   return injectIntl(MapPopover);
 }
