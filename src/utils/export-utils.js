@@ -36,10 +36,10 @@ import {set, generateHashId} from 'utils/utils';
 /**
  * Default file names
  */
-export const DEFAULT_IMAGE_NAME = 'kepler-gl.png';
+export const DEFAULT_IMAGE_NAME = 'kepler.gl.png';
 export const DEFAULT_HTML_NAME = 'kepler.gl.html';
-export const DEFAULT_JSON_NAME = 'keplergl.json';
-export const DEFAULT_DATA_NAME = 'kepler-gl';
+export const DEFAULT_JSON_NAME = 'kepler.gl.json';
+export const DEFAULT_DATA_NAME = 'kepler.gl';
 
 /**
  * Default json export settings
@@ -133,11 +133,11 @@ export function downloadFile(fileBlob, fileName) {
   }
 }
 
-export function exportImage(state) {
+export function exportImage(state, filename = DEFAULT_IMAGE_NAME) {
   const {imageDataUri} = state.uiState.exportImage;
   if (imageDataUri) {
     const file = dataURItoBlob(imageDataUri);
-    downloadFile(file, DEFAULT_IMAGE_NAME);
+    downloadFile(file, filename);
   }
 }
 
@@ -170,7 +170,8 @@ export function exportJson(state, options = {}) {
   const map = getMapJSON(state, options);
 
   const fileBlob = new Blob([exportToJsonString(map)], {type: 'application/json'});
-  downloadFile(fileBlob, DEFAULT_JSON_NAME);
+  const fileName = state.appName ? `${state.appName}.json` : DEFAULT_JSON_NAME;
+  downloadFile(fileBlob, fileName);
 }
 
 export function exportHtml(state, options) {
@@ -184,15 +185,15 @@ export function exportHtml(state, options) {
   };
 
   const fileBlob = new Blob([exportMapToHTML(data)], {type: 'text/html'});
-  downloadFile(fileBlob, DEFAULT_HTML_NAME);
+  downloadFile(fileBlob, state.appName ? `${state.appName}.html` : DEFAULT_HTML_NAME);
 }
 
 export function exportData(state, option) {
-  const {visState} = state;
+  const {visState, appName} = state;
   const {datasets} = visState;
   const {selectedDataset, dataType, filtered} = option;
   // get the selected data
-  const filename = DEFAULT_DATA_NAME;
+  const filename = appName ? appName : DEFAULT_DATA_NAME;
   const selectedDatasets = datasets[selectedDataset]
     ? [datasets[selectedDataset]]
     : Object.values(datasets);

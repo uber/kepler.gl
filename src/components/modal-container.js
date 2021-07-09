@@ -178,7 +178,7 @@ export default function ModalContainerFactory(
 
     _onExportImage = () => {
       if (!this.props.uiState.exportImage.processing) {
-        exportImage(this.props);
+        exportImage(this.props, `${this.props.appName}.png`);
         this.props.uiStateActions.cleanupExportImage();
         this._closeModal();
       }

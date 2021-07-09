@@ -180,6 +180,7 @@ export const bottomWidgetSelector = (props, theme) => ({
 });
 
 export const modalContainerSelector = (props, rootNode) => ({
+  appName: props.appName,
   mapStyle: props.mapStyle,
   visState: props.visState,
   mapState: props.mapState,
