@@ -18,11 +18,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-import React from 'react';
+import React, {useCallback} from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
-import {FormattedMessage} from 'localization';
-import {Tooltip} from 'components/common/styled-components';
+import PanelTabFactory from './panel-tab';
 
 const propTypes = {
   panels: PropTypes.arrayOf(PropTypes.object),
@@ -40,53 +39,29 @@ const PanelHeaderBottom = styled.div.attrs({
   min-height: 30px;
 `;
 
-export function PanelTabFactory() {
-  const PanelTab = styled.div.attrs({
-    className: 'side-panel__tab'
-  })`
-    align-items: flex-end;
-    border-bottom-style: solid;
-    border-bottom-width: 2px;
-    border-bottom-color: ${props =>
-      props.active ? props.theme.panelToggleBorderColor : 'transparent'};
-    color: ${props => (props.active ? props.theme.subtextColorActive : props.theme.panelTabColor)};
-    display: flex;
-    justify-content: center;
-    margin-right: ${props => props.theme.panelToggleMarginRight}px;
-    padding-bottom: ${props => props.theme.panelToggleBottomPadding}px;
-    width: ${props => props.theme.panelTabWidth};
-
-    :hover {
-      cursor: pointer;
-      color: ${props => props.theme.textColorHl};
-    }
-  `;
-
-  return PanelTab;
-}
-
 PanelToggleFactory.deps = [PanelTabFactory];
 function PanelToggleFactory(PanelTab) {
-  const PanelToggle = ({panels, activePanel, togglePanel}) => (
-    <PanelHeaderBottom>
-      {panels.map(panel => (
-        <PanelTab
-          key={panel.id}
-          data-tip
-          data-for={`${panel.id}-nav`}
-          active={activePanel === panel.id}
-          onClick={() => togglePanel(panel.id)}
-        >
-          <panel.iconComponent height="20px" />
-          <Tooltip id={`${panel.id}-nav`} effect="solid" delayShow={500} place="bottom">
-            <span>
-              <FormattedMessage id={panel.label || panel.id} />
-            </span>
-          </Tooltip>
-        </PanelTab>
-      ))}
-    </PanelHeaderBottom>
-  );
+  const PanelToggle = ({activePanel, panels, togglePanel}) => {
+    const onClick = useCallback(
+      panel => {
+        const callback = panel.onClick || togglePanel;
+        callback(panel.id);
+      },
+      [togglePanel]
+    );
+    return (
+      <PanelHeaderBottom>
+        {panels.map(panel => (
+          <PanelTab
+            key={panel.id}
+            panel={panel}
+            isActive={activePanel === panel.id}
+            onClick={() => onClick(panel)}
+          />
+        ))}
+      </PanelHeaderBottom>
+    );
+  };
 
   PanelToggle.propTypes = propTypes;
   return PanelToggle;

@@ -24,18 +24,21 @@ import InteractionPanelFactory from './interaction-panel/interaction-panel';
 InteractionManagerFactory.deps = [InteractionPanelFactory];
 
 function InteractionManagerFactory(InteractionPanel) {
-  const InteractionManager = ({interactionConfig, datasets, onConfigChange}) => (
-    <div className="interaction-manager">
-      {Object.keys(interactionConfig).map(key => (
-        <InteractionPanel
-          datasets={datasets}
-          config={interactionConfig[key]}
-          key={key}
-          onConfigChange={onConfigChange}
-        />
-      ))}
-    </div>
-  );
+  const InteractionManager = ({interactionConfig, datasets, visStateActions}) => {
+    const {interactionConfigChange: onConfigChange} = visStateActions;
+    return (
+      <div className="interaction-manager">
+        {Object.keys(interactionConfig).map(key => (
+          <InteractionPanel
+            datasets={datasets}
+            config={interactionConfig[key]}
+            key={key}
+            onConfigChange={onConfigChange}
+          />
+        ))}
+      </div>
+    );
+  };
 
   return InteractionManager;
 }

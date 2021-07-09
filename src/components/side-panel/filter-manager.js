@@ -29,18 +29,15 @@ import FilterPanelFactory from './filter-panel/filter-panel';
 FilterManagerFactory.deps = [SourceDataCatalogFactory, FilterPanelFactory];
 
 function FilterManagerFactory(SourceDataCatalog, FilterPanel) {
-  const FilterManager = ({
-    filters = [],
-    datasets,
-    layers,
-    showDatasetTable,
-    addFilter,
-    setFilter,
-    removeFilter,
-    enlargeFilter,
-    toggleAnimation,
-    toggleFilterFeature
-  }) => {
+  const FilterManager = ({filters = [], datasets, layers, showDatasetTable, visStateActions}) => {
+    const {
+      addFilter,
+      enlargeFilter,
+      removeFilter,
+      setFilter,
+      toggleAnimation,
+      toggleFilterFeature
+    } = visStateActions;
     const isAnyFilterAnimating = filters.some(f => f.isAnimating);
     const hadEmptyFilter = filters.some(f => !f.name);
     const hadDataset = Object.keys(datasets).length;
@@ -94,14 +91,9 @@ function FilterManagerFactory(SourceDataCatalog, FilterPanel) {
   FilterManager.propTypes = {
     datasets: PropTypes.object,
     layers: PropTypes.arrayOf(PropTypes.any).isRequired,
-    addFilter: PropTypes.func.isRequired,
-    removeFilter: PropTypes.func.isRequired,
-    enlargeFilter: PropTypes.func.isRequired,
-    toggleAnimation: PropTypes.func.isRequired,
-    toggleFilterFeature: PropTypes.func.isRequired,
-    setFilter: PropTypes.func.isRequired,
     filters: PropTypes.arrayOf(PropTypes.any).isRequired,
-    showDatasetTable: PropTypes.func,
+    showDatasetTable: PropTypes.func.isRequired,
+    visStateActions: PropTypes.object.isRequired,
 
     // fields can be undefined when dataset is not selected
     fields: PropTypes.arrayOf(PropTypes.any)

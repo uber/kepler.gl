@@ -35,7 +35,8 @@ export {default as KeplerGl, default, injectComponents, ContainerFactory} from '
 
 // factories
 export {default as KeplerGlFactory, DEFAULT_KEPLER_GL_PROPS} from './kepler-gl';
-export {default as SidePanelFactory, PanelTitleFactory} from './side-panel';
+export {default as SidePanelFactory} from './side-panel';
+export {default as PanelTitleFactory} from './side-panel/panel-title';
 export {default as MapContainerFactory} from './map-container';
 export {
   default as BottomWidgetFactory,
@@ -54,7 +55,8 @@ export {
 } from './side-panel/panel-header';
 export {default as PanelHeaderActionFactory} from './side-panel/panel-header-action';
 export {CollapseButtonFactory, default as SidebarFactory} from './side-panel/side-bar';
-export {default as PanelToggleFactory, PanelTabFactory} from './side-panel/panel-toggle';
+export {default as PanelToggleFactory} from './side-panel/panel-toggle';
+export {default as PanelTabFactory} from './side-panel/panel-tab';
 
 export {AddDataButtonFactory, default as LayerManagerFactory} from './side-panel/layer-manager';
 export {default as LayerPanelFactory} from './side-panel/layer-panel/layer-panel';
@@ -80,7 +82,6 @@ export {default as MapManagerFactory} from './side-panel/map-manager';
 export {default as LayerGroupSelectorFactory} from './side-panel/map-style-panel/map-layer-selector';
 export {default as MapStyleSelectorFactory} from './side-panel/map-style-panel/map-style-selector';
 export {default as CustomPanelsFactory} from './side-panel/custom-panel';
-
 // // map factories
 export {default as MapPopoverFactory} from './map/map-popover';
 export {default as MapControlFactory} from './map/map-control';

@@ -1,5 +1,4 @@
-import {ComponentClass, RefType} from 'react';
-import {LoaderObject} from '@loaders.gl/loader-utils';
+import {ComponentClass} from 'react';
 import {OnErrorCallBack, OnSuccessCallBack} from 'actions/provider-actions';
 import {MapState} from 'reducers/map-state-updaters';
 import {MapStyle} from 'reducers/map-style-updaters';
@@ -13,44 +12,44 @@ import * as UIStateActions from 'actions/ui-state-actions';
 import * as ProviderActions from 'actions/provider-actions';
 
 export type KeplerGlProps = {
-  id: string,
-  appWebsite: any,
-  onSaveMap?: () => void,
-  onViewStateChange?: () => void,
-  onDeckInitialized?: () => void,
-  onKeplerGlInitialized?: () => void,
-  mapboxApiAccessToken: string,
-  mapboxApiUrl: string,
-  getMapboxRef: () => React.RefType<any>,
-  mapStyles: {id: string, style?: object}[],
-  mapStylesReplaceDefault: boolean,
-  mapboxApiUrl: string,
-  width: number,
-  height: number,
-  appName: string,
-  version: string,
-  sidePanelWidth: number,
-  theme: object,
-  cloudProviders: object[],
-  deckGlProps?: object,
-  onLoadCloudMapSuccess?: OnSuccessCallBack,
-  onLoadCloudMapError?: OnErrorCallBack,
-  onExportToCloudSuccess?:OnSuccessCallBack,
-  onExportToCloudError?: OnErrorCallBack,
-  readOnly?: boolean
+  id: string;
+  appWebsite: any;
+  onSaveMap?: () => void;
+  onViewStateChange?: () => void;
+  onDeckInitialized?: () => void;
+  onKeplerGlInitialized?: () => void;
+  mapboxApiAccessToken: string;
+  mapboxApiUrl: string;
+  getMapboxRef: () => React.RefType<any>;
+  mapStyles: {id: string; style?: object}[];
+  mapStylesReplaceDefault: boolean;
+  mapboxApiUrl: string;
+  width: number;
+  height: number;
+  appName: string;
+  version: string;
+  sidePanelWidth: number;
+  theme: object;
+  cloudProviders: object[];
+  deckGlProps?: object;
+  onLoadCloudMapSuccess?: OnSuccessCallBack;
+  onLoadCloudMapError?: OnErrorCallBack;
+  onExportToCloudSuccess?: OnSuccessCallBack;
+  onExportToCloudError?: OnErrorCallBack;
+  readOnly?: boolean;
 };
 
 export type UnconnectedKeplerGlProps = KeplerGlProps & {
-  mapState: MapState,
-  mapStyle: MapStyle,
-  uiState: UiState,
-  visState: VisState,
-  providerState: ProviderState,
-  visStateActions: typeof VisStateActions,
-  uiStateActions: typeof UIStateActions,
-  mapStateActions: typeof MapStateActions,
-  mapStyleActions: typeof MapStyleActions,
-  providerActions: typeof ProviderActions
+  mapState: MapState;
+  mapStyle: MapStyle;
+  uiState: UiState;
+  visState: VisState;
+  providerState: ProviderState;
+  visStateActions: typeof VisStateActions;
+  uiStateActions: typeof UIStateActions;
+  mapStateActions: typeof MapStateActions;
+  mapStyleActions: typeof MapStyleActions;
+  providerActions: typeof ProviderActions;
 };
 
 export type KeplerGlComponent = ComponentClass<UnconnectedKeplerGlProps>;

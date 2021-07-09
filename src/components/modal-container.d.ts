@@ -10,7 +10,6 @@ import {MapStyle} from 'reducers/map-style-updaters';
 import {UiState} from 'reducers/ui-state-updaters';
 import {VisState} from 'reducers/vis-state-updaters';
 import {ProviderState} from 'reducers/provider-state-updaters';
-import {OnSuccessCallBack} from 'actions';
 
 export type ModalContainerProps = {
   rootNode: object;

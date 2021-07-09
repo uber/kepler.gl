@@ -139,21 +139,10 @@ function LayerManagerFactory(AddDataButton, LayerPanel, SourceDataCatalog) {
       layerBlending: PropTypes.string.isRequired,
       layerClasses: PropTypes.object.isRequired,
       layers: PropTypes.arrayOf(PropTypes.any).isRequired,
+      visStateActions: PropTypes.object.isRequired,
       // functions
-      addLayer: PropTypes.func.isRequired,
-      layerColorUIChange: PropTypes.func.isRequired,
-      layerConfigChange: PropTypes.func.isRequired,
-      layerTextLabelChange: PropTypes.func.isRequired,
-      layerVisualChannelConfigChange: PropTypes.func.isRequired,
-      layerTypeChange: PropTypes.func.isRequired,
-      layerVisConfigChange: PropTypes.func.isRequired,
-      openModal: PropTypes.func.isRequired,
-      removeLayer: PropTypes.func.isRequired,
-      duplicateLayer: PropTypes.func.isRequired,
       removeDataset: PropTypes.func.isRequired,
-      showDatasetTable: PropTypes.func.isRequired,
-      updateLayerBlending: PropTypes.func.isRequired,
-      updateLayerOrder: PropTypes.func.isRequired
+      showDatasetTable: PropTypes.func.isRequired
     };
     state = {
       isSorting: false
@@ -173,11 +162,13 @@ function LayerManagerFactory(AddDataButton, LayerPanel, SourceDataCatalog) {
     );
 
     _addEmptyNewLayer = () => {
-      this.props.addLayer();
+      const {visStateActions} = this.props;
+      visStateActions.addLayer();
     };
 
     _handleSort = ({oldIndex, newIndex}) => {
-      this.props.updateLayerOrder(arrayMove(this.props.layerOrder, oldIndex, newIndex));
+      const {visStateActions} = this.props;
+      visStateActions.reorderLayer(arrayMove(this.props.layerOrder, oldIndex, newIndex));
       this.setState({isSorting: false});
     };
 
@@ -187,27 +178,38 @@ function LayerManagerFactory(AddDataButton, LayerPanel, SourceDataCatalog) {
 
     _updateBeforeSortStart = ({index}) => {
       // if layer config is active, close it
-      const {layerOrder, layers, layerConfigChange} = this.props;
+      const {layerOrder, layers, visStateActions} = this.props;
       const layerIdx = layerOrder[index];
       if (layers[layerIdx].config.isConfigActive) {
-        layerConfigChange(layers[layerIdx], {isConfigActive: false});
+        visStateActions.layerConfigChange(layers[layerIdx], {isConfigActive: false});
       }
     };
 
     render() {
-      const {layers, datasets, layerOrder, openModal, intl} = this.props;
+      const {
+        layers,
+        datasets,
+        intl,
+        layerOrder,
+        showAddDataModal,
+        showDatasetTable,
+        removeDataset,
+        uiStateActions,
+        visStateActions
+      } = this.props;
+      const {toggleModal: openModal} = uiStateActions;
       const defaultDataset = Object.keys(datasets)[0];
       const layerTypeOptions = this.layerTypeOptionsSelector(this.props);
 
       const layerActions = {
-        layerColorUIChange: this.props.layerColorUIChange,
-        layerConfigChange: this.props.layerConfigChange,
-        layerVisualChannelConfigChange: this.props.layerVisualChannelConfigChange,
-        layerTypeChange: this.props.layerTypeChange,
-        layerVisConfigChange: this.props.layerVisConfigChange,
-        layerTextLabelChange: this.props.layerTextLabelChange,
-        removeLayer: this.props.removeLayer,
-        duplicateLayer: this.props.duplicateLayer
+        layerColorUIChange: visStateActions.layerColorUIChange,
+        layerConfigChange: visStateActions.layerConfigChange,
+        layerVisualChannelConfigChange: visStateActions.layerVisualChannelConfigChange,
+        layerTypeChange: visStateActions.layerTypeChange,
+        layerVisConfigChange: visStateActions.layerVisConfigChange,
+        layerTextLabelChange: visStateActions.layerTextLabelChange,
+        removeLayer: visStateActions.removeLayer,
+        duplicateLayer: visStateActions.duplicateLayer
       };
 
       const panelProps = {
@@ -220,11 +222,11 @@ function LayerManagerFactory(AddDataButton, LayerPanel, SourceDataCatalog) {
         <div className="layer-manager">
           <SourceDataCatalog
             datasets={datasets}
-            showDatasetTable={this.props.showDatasetTable}
-            removeDataset={this.props.removeDataset}
+            showDatasetTable={showDatasetTable}
+            removeDataset={removeDataset}
             showDeleteDataset
           />
-          <AddDataButton onClick={this.props.showAddDataModal} isInactive={!defaultDataset} />
+          <AddDataButton onClick={showAddDataModal} isInactive={!defaultDataset} />
           <SidePanelDivider />
           <SidePanelSection>
             <WrappedSortableContainer
@@ -266,7 +268,7 @@ function LayerManagerFactory(AddDataButton, LayerPanel, SourceDataCatalog) {
           </SidePanelSection>
           <LayerBlendingSelector
             layerBlending={this.props.layerBlending}
-            updateLayerBlending={this.props.updateLayerBlending}
+            updateLayerBlending={visStateActions.updateLayerBlending}
             intl={intl}
           />
         </div>

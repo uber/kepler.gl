@@ -164,22 +164,26 @@ export const SIDEBAR_PANELS = [
   {
     id: 'layer',
     label: 'sidebar.panels.layer',
-    iconComponent: Layers
+    iconComponent: Layers,
+    onClick: null
   },
   {
     id: 'filter',
     label: 'sidebar.panels.filter',
-    iconComponent: FilterFunnel
+    iconComponent: FilterFunnel,
+    onClick: null
   },
   {
     id: 'interaction',
     label: 'sidebar.panels.interaction',
-    iconComponent: CursorClick
+    iconComponent: CursorClick,
+    onClick: null
   },
   {
     id: 'map',
     label: 'sidebar.panels.basemap',
-    iconComponent: Settings
+    iconComponent: Settings,
+    onClick: null
   }
 ];
 

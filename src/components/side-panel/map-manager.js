@@ -37,8 +37,7 @@ function MapManagerFactory(MapStyleSelector, LayerGroupSelector) {
   class MapManager extends Component {
     static propTypes = {
       mapStyle: PropTypes.object.isRequired,
-      onConfigChange: PropTypes.func.isRequired,
-      onStyleChange: PropTypes.func.isRequired,
+      mapStyleActions: PropTypes.object.isRequired,
       showAddMapStyleModal: PropTypes.func.isRequired
     };
 
@@ -47,19 +46,21 @@ function MapManagerFactory(MapStyleSelector, LayerGroupSelector) {
     };
 
     buildingColorSelector = props => props.mapStyle.threeDBuildingColor;
-    setColorSelector = props => props.set3dBuildingColor;
+    setColorSelector = props => props.mapStyleActions.set3dBuildingColor;
 
     _toggleSelecting = () => {
       this.setState({isSelecting: !this.state.isSelecting});
     };
 
     _selectStyle = val => {
-      this.props.onStyleChange(val);
+      const {mapStyleActions} = this.props;
+      const {mapStyleChange} = mapStyleActions;
+      mapStyleChange(val);
       this._toggleSelecting();
     };
 
     render() {
-      const {mapStyle, intl} = this.props;
+      const {mapStyle, intl, mapStyleActions, showAddMapStyleModal} = this.props;
       const currentStyle = mapStyle.mapStyles[mapStyle.styleType] || {};
       const editableLayers = (currentStyle.layerGroups || []).map(lg => lg.slug);
       const hasBuildingLayer = mapStyle.visibleLayerGroups['3d building'];
@@ -92,17 +93,13 @@ function MapManagerFactory(MapStyleSelector, LayerGroupSelector) {
                 layers={mapStyle.visibleLayerGroups}
                 editableLayers={editableLayers}
                 topLayers={mapStyle.topLayerGroups}
-                onChange={this.props.onConfigChange}
+                onChange={mapStyleActions.mapConfigChange}
               />
             ) : null}
             <SidePanelSection>
               <ColorSelector colorSets={colorSets} disabled={!hasBuildingLayer} />
             </SidePanelSection>
-            <Button
-              className="add-map-style-button"
-              onClick={this.props.showAddMapStyleModal}
-              secondary
-            >
+            <Button className="add-map-style-button" onClick={showAddMapStyleModal} secondary>
               <Add height="12px" />
               <FormattedMessage id={'mapManager.addMapStyle'} />
             </Button>

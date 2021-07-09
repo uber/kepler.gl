@@ -46,12 +46,14 @@ const defaultProps = {
   datasets: {},
   layers: [],
   showDatasetTable: nop,
-  addFilter: nop,
-  setFilter: nop,
-  removeFilter: nop,
-  enlargeFilter: nop,
-  toggleAnimation: nop,
-  toggleFilterFeature: nop
+  visStateActions: {
+    addFilter: nop,
+    setFilter: nop,
+    removeFilter: nop,
+    enlargeFilter: nop,
+    toggleAnimation: nop,
+    toggleFilterFeature: nop
+  }
 };
 
 // components
@@ -60,12 +62,14 @@ const filterManagerProps = {
   datasets: StateWFilters.visState.datasets,
   layers: StateWFilters.visState.layers,
   showDatasetTable: nop,
-  addFilter: nop,
-  setFilter: nop,
-  removeFilter: nop,
-  enlargeFilter: nop,
-  toggleAnimation: nop,
-  toggleFilterFeature: nop
+  visStateActions: {
+    addFilter: nop,
+    setFilter: nop,
+    removeFilter: nop,
+    enlargeFilter: nop,
+    toggleAnimation: nop,
+    toggleFilterFeature: nop
+  }
 };
 
 test('Components -> FilterManager.mount -> no prop', t => {
@@ -97,11 +101,18 @@ test('Components -> FilterManager.mount -> no prop', t => {
 test('Components -> FilterManager.mount -> with prop', t => {
   // mount
   const addFilter = sinon.spy();
+  const newProps = {
+    ...filterManagerProps,
+    visStateActions: {
+      ...filterManagerProps.visStateActions,
+      addFilter
+    }
+  };
   let wrapper;
   t.doesNotThrow(() => {
     wrapper = mountWithTheme(
       <IntlWrapper>
-        <FilterManager {...filterManagerProps} addFilter={addFilter} />
+        <FilterManager {...newProps} />
       </IntlWrapper>
     );
   }, 'FilterManager should not fail without props');
@@ -126,7 +137,7 @@ test('Components -> FilterManager.mount -> with prop', t => {
   t.deepEqual(
     addFilter.args,
     [[Object.keys(StateWFilters.visState.datasets)[0]]],
-    'Should call addfilter with 1st dataset'
+    'Should call addFilter with 1st dataset'
   );
 
   t.end();
