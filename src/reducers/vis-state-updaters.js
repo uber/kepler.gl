@@ -780,6 +780,21 @@ export const toggleLayerAnimationUpdater = state => ({
     isAnimating: !state.animationConfig.isAnimating
   }
 });
+
+/**
+ * Hide and show layer animation control
+ * @memberof visStateUpdaters
+ * @type {typeof import('./vis-state-updaters').toggleLayerAnimationControlUpdater}
+ * @public
+ */
+export const toggleLayerAnimationControlUpdater = state => ({
+  ...state,
+  animationConfig: {
+    ...state.animationConfig,
+    hideControl: !state.animationConfig.hideControl
+  }
+});
+
 /**
  * Change filter animation speed
  * @memberof visStateUpdaters

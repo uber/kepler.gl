@@ -124,6 +124,8 @@ BottomWidgetFactory.deps = [
   FilterAnimationControllerFactory,
   LayerAnimationControllerFactory
 ];
+
+/* eslint-disable complexity */
 export default function BottomWidgetFactory(
   TimeWidget,
   AnimationControl,
@@ -165,7 +167,8 @@ export default function BottomWidgetFactory(
       Array.isArray(animationConfig.domain) && Number.isFinite(animationConfig.currentTime);
     // if animation control is showing, hide time display in time slider
     const showFloatingTimeDisplay = !animatableLayer.length;
-    const showAnimationControl = animatableLayer.length && readyToAnimation;
+    const showAnimationControl =
+      animatableLayer.length && readyToAnimation && !animationConfig.hideControl;
     const showTimeWidget = enlargedFilterIdx > -1 && Object.keys(datasets).length > 0;
 
     // if filter is not animating, pass in enlarged filter here because
@@ -236,3 +239,4 @@ export default function BottomWidgetFactory(
 
   return BottomWidget;
 }
+/* eslint-enable complexity */

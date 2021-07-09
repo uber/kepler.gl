@@ -55,6 +55,8 @@ const actionHandler = {
 
   [ActionTypes.TOGGLE_LAYER_ANIMATION]: visStateUpdaters.toggleLayerAnimationUpdater,
 
+  [ActionTypes.TOGGLE_LAYER_ANIMATION_CONTROL]: visStateUpdaters.toggleLayerAnimationControlUpdater,
+
   [ActionTypes.LOAD_FILES]: visStateUpdaters.loadFilesUpdater,
 
   [ActionTypes.LOAD_FILES_ERR]: visStateUpdaters.loadFilesErrUpdater,

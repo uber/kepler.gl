@@ -177,6 +177,8 @@ export type AnimationConfig = {
   timeFormat?: string | null;
   // custom ui input
   timezone?: string | null;
+  // hide or show control
+  hideControl?: boolean;
 };
 
 export type BaseInteraction = {
@@ -320,6 +322,10 @@ export function updateLayerBlendingUpdater(
 export function toggleLayerAnimationUpdater(
   state: VisState,
   action: VisStateActions.ToggleLayerAnimationUpdaterAction
+): VisState;
+export function toggleLayerAnimationControlUpdater(
+  state: VisState,
+  action: VisStateActions.ToggleLayerAnimationControlUpdaterAction
 ): VisState;
 export function interactionConfigChangeUpdater(
   state: VisState,

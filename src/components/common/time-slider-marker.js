@@ -19,7 +19,7 @@
 // THE SOFTWARE.
 
 import React, {useRef, useEffect, useMemo} from 'react';
-import moment from 'moment';
+import moment from 'moment-timezone';
 import PropTypes from 'prop-types';
 import {scaleUtc} from 'd3-scale';
 import {select} from 'd3-selection';

@@ -499,9 +499,29 @@ export function updateLayerAnimationSpeed(speed) {
   };
 }
 
+/**
+ * start end end layer animation
+ * @memberof visStateActions
+ * @type {typeof import('./vis-state-actions').toggleLayerAnimation}
+ * @returns action
+ * @public
+ */
 export function toggleLayerAnimation() {
   return {
     type: ActionTypes.TOGGLE_LAYER_ANIMATION
+  };
+}
+
+/**
+ * hide and show layer animation control
+ * @memberof visStateActions
+ * @type {typeof import('./vis-state-actions').toggleLayerAnimationControl}
+ * @returns action
+ * @public
+ */
+export function toggleLayerAnimationControl() {
+  return {
+    type: ActionTypes.TOGGLE_LAYER_ANIMATION_CONTROL
   };
 }
 

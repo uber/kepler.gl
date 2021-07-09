@@ -292,12 +292,13 @@ export function updateLayerAnimationSpeed(
   speed: number
 ): Merge<UpdateLayerAnimationSpeedUpdaterAction, {type: ActionTypes.UPDATE_LAYER_ANIMATION_SPEED}>;
 
-export type ToggleLayerAnimationUpdaterAction = {
-  idx;
-};
-export function toggleLayerAnimation(
-  idx: number
-): Merge<ToggleLayerAnimationUpdaterAction, {type: ActionTypes.TOGGLE_LAYER_ANIMATION}>;
+export type ToggleLayerAnimationUpdaterAction = {};
+export function toggleLayerAnimation(): 
+  Merge<ToggleLayerAnimationUpdaterAction, {type: ActionTypes.TOGGLE_LAYER_ANIMATION}>;
+
+export type ToggleLayerAnimationControlUpdaterAction = {};
+export function toggleLayerAnimationControl(): 
+  Merge<ToggleLayerAnimationControlUpdaterAction, {type: ActionTypes.TOGGLE_LAYER_ANIMATION_CONTROL}>;
 
 export type EnlargeFilterUpdaterAction = {
   idx: number;
