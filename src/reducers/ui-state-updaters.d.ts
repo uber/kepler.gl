@@ -44,7 +44,8 @@ export type ExportMap = {
 export type MapControl = {
   show: boolean;
   active: boolean;
-  activeMapIndex: number;
+  disableClose?: boolean;
+  activeMapIndex?: number;
 };
 export type MapControls = {
   visibleLayers: MapControl;

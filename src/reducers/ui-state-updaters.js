@@ -81,6 +81,7 @@ const uiStateUpdaters = null;
 const DEFAULT_MAP_CONTROLS_FEATURES = {
   show: true,
   active: false,
+  disableClose: false,
   // defines which map index users are interacting with (through map controls)
   activeMapIndex: 0
 };

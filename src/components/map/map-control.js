@@ -125,29 +125,34 @@ const MapLegendTooltip = ({id, message}) => (
 );
 
 /** @type {import('./map-control').LayerSelectorPanelComponent} */
-const LayerSelectorPanel = React.memo(({items, onMapToggleLayer, isActive, toggleMenuPanel}) =>
-  !isActive ? (
-    (<MapControlButton
-      key={1}
-      onClick={e => {
-        e.preventDefault();
-        toggleMenuPanel();
-      }}
-      className="map-control-button toggle-layer"
-      data-tip
-      data-for="toggle-layer"
-    >
-      <Layers height="22px" />
-      <MapControlTooltip
-        id="toggle-layer"
-        message={isActive ? 'tooltip.hideLayerPanel' : 'tooltip.showLayerPanel'}
-      />
-    </MapControlButton>)
-  ) : (
-    (<MapControlPanel header="header.visibleLayers" onClick={toggleMenuPanel}>
-      <MapLayerSelector layers={items} onMapToggleLayer={onMapToggleLayer} />
-    </MapControlPanel>)
-  )
+const LayerSelectorPanel = React.memo(
+  ({items, onMapToggleLayer, isActive, toggleMenuPanel, disableClose}) =>
+    !isActive ? (
+      (<MapControlButton
+        key={1}
+        onClick={e => {
+          e.preventDefault();
+          toggleMenuPanel();
+        }}
+        className="map-control-button toggle-layer"
+        data-tip
+        data-for="toggle-layer"
+      >
+        <Layers height="22px" />
+        <MapControlTooltip
+          id="toggle-layer"
+          message={isActive ? 'tooltip.hideLayerPanel' : 'tooltip.showLayerPanel'}
+        />
+      </MapControlButton>)
+    ) : (
+      (<MapControlPanel
+        header="header.visibleLayers"
+        onClick={toggleMenuPanel}
+        disableClose={disableClose}
+      >
+        <MapLayerSelector layers={items} onMapToggleLayer={onMapToggleLayer} />
+      </MapControlPanel>)
+    )
 );
 
 LayerSelectorPanel.displayName = 'LayerSelectorPanel';
@@ -372,7 +377,7 @@ export function MapDrawPanelFactory() {
 
 /** @type {import('./map-control').LocalePanelComponent} */
 const LocalePanel = React.memo(
-  ({availableLocales, isActive, onToggleMenuPanel, onSetLocale, activeLocale}) => {
+  ({availableLocales, isActive, onToggleMenuPanel, onSetLocale, activeLocale, disableClose}) => {
     const onClickItem = useCallback(
       locale => {
         onSetLocale(locale);
@@ -403,7 +408,13 @@ const LocalePanel = React.memo(
             ))}
           </StyledToolbar>
         ) : null}
-        <MapControlButton onClick={onClickButton} active={isActive} data-tip data-for="locale">
+        <MapControlButton
+          onClick={onClickButton}
+          active={isActive}
+          data-tip
+          data-for="locale"
+          disableClose={disableClose}
+        >
           {activeLocale.toUpperCase()}
           <MapControlTooltip id="locale" message="tooltip.selectLocale" />
         </MapControlButton>
@@ -522,6 +533,7 @@ function MapControlFactory(MapDrawPanel, Toggle3dButton, SplitMapButton, MapLege
                 onMapToggleLayer={onMapToggleLayer}
                 isActive={visibleLayers.active}
                 toggleMenuPanel={() => onToggleMapControl('visibleLayers')}
+                disableClose={visibleLayers.disableClose}
               />
             </ActionPanel>
           ) : null}
