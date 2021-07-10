@@ -248,7 +248,7 @@ export default class IconLayer extends Layer {
 
     const layerProps = {
       radiusScale,
-      ...(this.config.visConfig.fixedRadius ? {} : {radiusMaxPixels: 500})
+      ...(this.config.visConfig.fixedRadius ? {} : {radiusMaxPixels: 15})
     };
 
     const updateTriggers = {

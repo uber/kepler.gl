@@ -329,7 +329,7 @@ test('#IconLayer -> renderLayer', t => {
 
         const expectedProps = {
           opacity: layer.config.visConfig.opacity,
-          radiusMaxPixels: 500,
+          radiusMaxPixels: 15,
           radiusScale: layer.getRadiusScaleByZoom(INITIAL_MAP_STATE),
           filterRange: preparedDataset.gpuFilter.filterRange,
           brushingEnabled: false
