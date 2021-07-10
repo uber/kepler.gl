@@ -47,7 +47,8 @@ export const KeplerGlModal = widgets.DOMWidgetModel.extend({
     _view_module: 'keplergl-jupyter',
 
     data: {},
-    config: {}
+    config: {},
+    _exported_map: {}
   }
 });
 
@@ -61,6 +62,7 @@ export const KeplerGlView = widgets.DOMWidgetView.extend({
     // event listener
     this.model.on('change:data', this.data_changed, this);
     this.model.on('change:config', this.config_changed, this);
+    this.model.on('custom', this.export_map, this)
 
     window.dom = this.el;
   },
@@ -75,5 +77,13 @@ export const KeplerGlView = widgets.DOMWidgetView.extend({
     log('KeplerGlModal start config_change');
 
     this.keplergl.onConfigChange(this);
+  },
+
+  export_map(content) {
+    console.log("HI", content)
+    if (content === 'export_map') {
+      this.model.set('_exported_map', this.keplergl.exportMap())
+      this.model.save_changes()
+    }
   }
 });

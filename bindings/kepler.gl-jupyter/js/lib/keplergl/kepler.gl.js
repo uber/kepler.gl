@@ -57,6 +57,13 @@ function getDatasetsInStore(store) {
   }
 }
 
+function getMapExportInStore(store) {
+  if (store) {
+    const currentState = store.getState().keplerGl.map;
+    return currentState.visState.schema.save(currentState)
+  }
+}
+
 class KeplerGlJupyter {
   constructor() {
     this.id = `${DOM_EL_ID}-${counter}`;
@@ -127,6 +134,10 @@ class KeplerGlJupyter {
       log('config already in model');
       this.onConfigChange(that);
     }
+  }
+
+  exportMap() {
+    return getMapExportInStore(this.store);
   }
 
   onDataChange(that) {

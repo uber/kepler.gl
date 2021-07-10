@@ -7,6 +7,30 @@ import shapely.wkt
 import json
 from ._version import EXTENSION_SPEC_VERSION
 
+from functools import wraps
+
+def yield_for_change(widget, attribute):
+    """Pause a generator to wait for a widget change event.
+
+    This is a decorator for a generator function which pauses the generator on yield
+    until the given widget attribute changes. The new value of the attribute is
+    sent to the generator and is the value of the yield.
+    """
+    def f(iterator):
+        @wraps(iterator)
+        def inner():
+            i = iterator()
+            def next_i(change):
+                try:
+                    i.send(change.new)
+                except StopIteration as e:
+                    widget.unobserve(next_i, attribute)
+            widget.observe(next_i, attribute)
+            # start the generator
+            next(i)
+        return inner
+    return f
+
 documentation = 'https://docs.kepler.gl/docs/keplergl-jupyter'
 def _df_to_dict(df):
     ''' Create an input dict for Kepler.gl using a DataFrame object
@@ -98,6 +122,7 @@ class KeplerGl(widgets.DOMWidget):
     data = Dict({}).tag(sync=True, **data_serialization)
     config = Dict({}).tag(sync=True)
     height = Int(400).tag(sync=True)
+    _exported_map = Dict({}).tag(sync=True)
 
     def __init__(self, **kwargs):
         super(KeplerGl, self).__init__(**kwargs)
@@ -200,3 +225,17 @@ class KeplerGl(widgets.DOMWidget):
             f.write(frame_txt)
 
         print("Map saved to {}!".format(file_name))
+
+    def save_to_json(self):
+        self.send('export_map')
+        exported_map = {}
+
+        @yield_for_change(self, '_exported_map')
+        def f():
+            for i in range(1):
+                print('did workkk %s'%i)
+                exported_map = yield
+                print("changed!")
+        f()
+        return exported_map
+

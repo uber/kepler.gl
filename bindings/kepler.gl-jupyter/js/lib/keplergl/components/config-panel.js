@@ -62,7 +62,7 @@ function configStringify(config) {
   });
 }
 
-export const CopyConfig = ({config}) => {
+export const CopyConfig = ({config, visState}) => {
   const [copied, setCopy] = useState(false);
   const value = configStringify(config);
   return (
@@ -73,6 +73,14 @@ export const CopyConfig = ({config}) => {
           {copied ? 'Copied!' : 'Copy'}
         </Button>
       </CopyToClipboard>
+      {/* <Button width="100px" onClick={() => {
+        console.log(utils)
+
+        exportJson({visState})
+        }}>
+        <Icons.Clipboard height="16px" />
+        Save
+      </Button> */}
       <TextArea value={value} readOnly selected />
     </StyleCopyConfig>
   );
@@ -82,7 +90,7 @@ function CustomSidePanelsFactory() {
   const CustomPanels = ({activeSidePanel, visState, mapState, mapStyle}) => {
     const config = KeplerGlSchema.getConfigToSave({visState, mapState, mapStyle});
     if (activeSidePanel === 'config') {
-      return <CopyConfig config={config} />;
+      return <CopyConfig config={config} visState={visState}/>;
     }
 
     return null;
