@@ -270,6 +270,7 @@ Trigger file loading dispatch `addDataToMap` if succeed, or `loadFilesErr` if fa
 -   `state` **[Object][69]** `visState`
 -   `action` **[Object][69]** action
     -   `action.files` **[Array][75]&lt;[Object][69]>** array of fileblob
+    -   `action.onFinish` **[Function][84]** action creator to execute after load file succeed
 
 Returns **[Object][69]** nextState
 
@@ -277,7 +278,7 @@ Returns **[Object][69]** nextState
 
 Trigger map click event, unselect clicked object
 
--   **Action**: [`onMapClick`][84]
+-   **Action**: [`onMapClick`][85]
 
 **Parameters**
 
@@ -289,7 +290,7 @@ Returns **[Object][69]** nextState
 
 Propagate `visState` reducer with a new configuration. Current config will be override.
 
--   **Action**: [`receiveMapConfig`][85]
+-   **Action**: [`receiveMapConfig`][86]
 
 **Parameters**
 
@@ -307,7 +308,7 @@ Returns **[Object][69]** nextState
 
 Remove a dataset and all layers, filters, tooltip configs that based on it
 
--   **Action**: [`removeDataset`][86]
+-   **Action**: [`removeDataset`][87]
 
 **Parameters**
 
@@ -321,7 +322,7 @@ Returns **[Object][69]** nextState
 
 Remove a filter
 
--   **Action**: [`removeFilter`][87]
+-   **Action**: [`removeFilter`][88]
 
 **Parameters**
 
@@ -335,7 +336,7 @@ Returns **[Object][69]** nextState
 
 remove layer
 
--   **Action**: [`removeLayer`][88]
+-   **Action**: [`removeLayer`][89]
 
 **Parameters**
 
@@ -349,7 +350,7 @@ Returns **[Object][69]** nextState
 
 Reorder layer
 
--   **Action**: [`reorderLayer`][89]
+-   **Action**: [`reorderLayer`][90]
 
 **Parameters**
 
@@ -363,7 +364,7 @@ Returns **[Object][69]** nextState
 
 reset visState to initial State
 
--   **Action**: [`resetMapConfig`][90]
+-   **Action**: [`resetMapConfig`][91]
 
 **Parameters**
 
@@ -375,7 +376,7 @@ Returns **[Object][69]** nextState
 
 Set the property of a filter plot
 
--   **Action**: [`setFilterPlot`][91]
+-   **Action**: [`setFilterPlot`][92]
 
 **Parameters**
 
@@ -390,7 +391,7 @@ Returns **[Object][69]** nextState
 
 Update filter property
 
--   **Action**: [`setFilter`][92]
+-   **Action**: [`setFilter`][93]
 
 **Parameters**
 
@@ -407,7 +408,7 @@ Returns **[Object][69]** nextState
 
 User input to update the info of the map
 
--   **Action**: [`setMapInfo`][93]
+-   **Action**: [`setMapInfo`][94]
 
 **Parameters**
 
@@ -421,7 +422,7 @@ Returns **[Object][69]** nextState
 
 Display dataset table in a modal
 
--   **Action**: [`showDatasetTable`][94]
+-   **Action**: [`showDatasetTable`][95]
 
 **Parameters**
 
@@ -435,7 +436,7 @@ Returns **[Object][69]** nextState
 
 Start and end filter animation
 
--   **Action**: [`toggleFilterAnimation`][95]
+-   **Action**: [`toggleFilterAnimation`][96]
 
 **Parameters**
 
@@ -449,7 +450,7 @@ Returns **[Object][69]** nextState
 
 Toggle visibility of a layer in a split map
 
--   **Action**: [`toggleLayerForMap`][96]
+-   **Action**: [`toggleLayerForMap`][97]
 
 **Parameters**
 
@@ -464,13 +465,13 @@ Returns **[Object][69]** nextState
 
 Toggle visibility of a layer for a split map
 
--   **Action**: [`toggleSplitMap`][97]
+-   **Action**: [`toggleSplitMap`][98]
 
 **Parameters**
 
 -   `state` **[Object][69]** `visState`
 -   `action` **[Object][69]** action
-    -   `action.payload` **([Number][74] \| [undefined][98])** index of the split map
+    -   `action.payload` **([Number][74] \| [undefined][99])** index of the split map
 
 Returns **[Object][69]** nextState
 
@@ -478,7 +479,7 @@ Returns **[Object][69]** nextState
 
 Reset animation config current time to a specified value
 
--   **Action**: [`updateAnimationTime`][99]
+-   **Action**: [`updateAnimationTime`][100]
 
 **Parameters**
 
@@ -492,7 +493,7 @@ Returns **[Object][69]** nextState
 
 Change filter animation speed
 
--   **Action**: [`updateFilterAnimationSpeed`][100]
+-   **Action**: [`updateFilterAnimationSpeed`][101]
 
 **Parameters**
 
@@ -507,7 +508,7 @@ Returns **[Object][69]** nextState
 
 Update animation speed with the vertical speed slider
 
--   **Action**: [`updateLayerAnimationSpeed`][101]
+-   **Action**: [`updateLayerAnimationSpeed`][102]
 
 **Parameters**
 
@@ -521,7 +522,7 @@ Returns **[Object][69]** nextState
 
 update layer blending mode
 
--   **Action**: [`updateLayerBlending`][102]
+-   **Action**: [`updateLayerBlending`][103]
 
 **Parameters**
 
@@ -535,7 +536,7 @@ Returns **[Object][69]** nextState
 
 Add new dataset to `visState`, with option to load a map config along with the datasets
 
--   **Action**: [`updateVisData`][103]
+-   **Action**: [`updateVisData`][104]
 
 **Parameters**
 
@@ -721,42 +722,44 @@ Returns **[Object][69]** nextState
 
 [83]: ../actions/actions.md#loadfiles
 
-[84]: ../actions/actions.md#onmapclick
+[84]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function
 
-[85]: ../actions/actions.md#receivemapconfig
+[85]: ../actions/actions.md#onmapclick
 
-[86]: ../actions/actions.md#removedataset
+[86]: ../actions/actions.md#receivemapconfig
 
-[87]: ../actions/actions.md#removefilter
+[87]: ../actions/actions.md#removedataset
 
-[88]: ../actions/actions.md#removelayer
+[88]: ../actions/actions.md#removefilter
 
-[89]: ../actions/actions.md#reorderlayer
+[89]: ../actions/actions.md#removelayer
 
-[90]: ../actions/actions.md#resetmapconfig
+[90]: ../actions/actions.md#reorderlayer
 
-[91]: ../actions/actions.md#setfilterplot
+[91]: ../actions/actions.md#resetmapconfig
 
-[92]: ../actions/actions.md#setfilter
+[92]: ../actions/actions.md#setfilterplot
 
-[93]: ../actions/actions.md#setmapinfo
+[93]: ../actions/actions.md#setfilter
 
-[94]: ../actions/actions.md#showdatasettable
+[94]: ../actions/actions.md#setmapinfo
 
-[95]: ../actions/actions.md#togglefilteranimation
+[95]: ../actions/actions.md#showdatasettable
 
-[96]: ../actions/actions.md#togglelayerformap
+[96]: ../actions/actions.md#togglefilteranimation
 
-[97]: ../actions/actions.md#togglesplitmap
+[97]: ../actions/actions.md#togglelayerformap
 
-[98]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined
+[98]: ../actions/actions.md#togglesplitmap
 
-[99]: ../actions/actions.md#updateanimationtime
+[99]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined
 
-[100]: ../actions/actions.md#updatefilteranimationspeed
+[100]: ../actions/actions.md#updateanimationtime
 
-[101]: ../actions/actions.md#updatelayeranimationspeed
+[101]: ../actions/actions.md#updatefilteranimationspeed
 
-[102]: ../actions/actions.md#updatelayerblending
+[102]: ../actions/actions.md#updatelayeranimationspeed
 
-[103]: ../actions/actions.md#updatevisdata
+[103]: ../actions/actions.md#updatelayerblending
+
+[104]: ../actions/actions.md#updatevisdata

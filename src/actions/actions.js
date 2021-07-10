@@ -92,7 +92,7 @@ import {createAction} from 'redux-actions';
  *       },
  *       data: sampleTripData
  *     },
- *     option: {
+ *     options: {
  *       centerMap: true,
  *       readOnly: false,
  *       keepExistingConfig: false
